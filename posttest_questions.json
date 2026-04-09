@@ -1,0 +1,95 @@
+{
+  "quiz_metadata": {
+    "title": "One-Way ANOVA Post-Test",
+    "description": "Answer the following questions based on your current understanding. Answer to the best of your ability.",
+    "time_limit_minutes": 15,
+    "allowed_attempts": 1,
+    "calculator_allowed": false,
+    "quiz_type": "assignment",
+    "shuffle_answers": false
+  },
+  "shared_stimulus": {
+    "applies_to_questions": [1, 2, 3, 4, 5, 6],
+    "text": "A social scientist is studying how county population sizes differ across four U.S. states — California, Oregon, Washington, and Nevada — to support regional planning. Using recent population estimates from U.S. Census Bureau data, he compiled sample data for all counties in each state. In California's 58 counties, the average county population was about 680,000 residents with a sample standard deviation around 1,500,000, reflecting very large counties like Los Angeles (over 9.7 million) and many small rural counties. Washington's 39 counties had an average near 205,000 with a standard deviation around 400,000, while Oregon's 36 counties averaged about 118,000 with a σ of roughly 150,000. Nevada's 17 counties showed a mean county population around 190,000 with a σ near 600,000, driven by highly populated counties such as Clark County (over 2.4 million) alongside much smaller rural counties."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice_question",
+      "title": "Contextual Understanding",
+      "question_text": "What is the observational unit?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The state", "weight": 0 },
+        { "id": "B", "text": "The county", "weight": 100 },
+        { "id": "C", "text": "The population size", "weight": 0 },
+        { "id": "D", "text": "The region", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice_question",
+      "title": "Hypotheses",
+      "question_text": "Which set of hypotheses is correct for a One-Way ANOVA comparing three group means?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "H₀: μ₁ ≠ μ₂ ≠ μ₃ / Hₐ: μ₁ = μ₂ = μ₃", "weight": 0 },
+        { "id": "B", "text": "H₀: μ₁ = μ₂ = μ₃ / Hₐ: At least one mean is different", "weight": 100 },
+        { "id": "C", "text": "H₀: All sample means are equal / Hₐ: All population means are different", "weight": 0 },
+        { "id": "D", "text": "H₀: μ₁ = μ₂ / Hₐ: μ₃ is different", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 3,
+      "type": "essay_question",
+      "title": "Interpreting F",
+      "question_text": "Explain what a large F-statistic indicates in terms of between-group and within-group variability.",
+      "points_possible": 2,
+      "instructions": "Answer in 1-2 sentences.",
+      "correct_answer": null,
+      "grading_note": "Manual grading required. Expected answer: A large F-statistic indicates that the between-group variability is much greater than the within-group variability, suggesting that the differences among group means are unlikely to be due to chance alone."
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice_question",
+      "title": "Assumptions in Practice",
+      "question_text": "If a One-Way ANOVA is conducted and one group shows much larger spread in its data than the others, which assumption is most directly violated?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Independence", "weight": 0 },
+        { "id": "B", "text": "Normality", "weight": 0 },
+        { "id": "C", "text": "Equal variance (homogeneity of variance)", "weight": 100 },
+        { "id": "D", "text": "Random sampling", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 5,
+      "type": "multiple_answers_question",
+      "title": "Post-hoc Analysis",
+      "question_text": "In which situations is it appropriate to use a post-hoc test such as Tukey's HSD? Select all that apply.",
+      "points_possible": 2,
+      "answers": [
+        { "id": "A", "text": "After rejecting the null hypothesis in a One-Way ANOVA", "weight": 100 },
+        { "id": "B", "text": "To determine which specific group means differ", "weight": 100 },
+        { "id": "C", "text": "When there are exactly two groups", "weight": 0 },
+        { "id": "D", "text": "Before running a One-Way ANOVA", "weight": 0 },
+        { "id": "E", "text": "When group variances are unequal", "weight": 0 }
+      ],
+      "correct_answer_ids": ["A", "B"],
+      "grading_note": "Full credit for selecting A and B only. Partial credit at professor's discretion."
+    },
+    {
+      "id": 6,
+      "type": "essay_question",
+      "title": "Conclusion Writing",
+      "question_text": "A researcher compares the average population sizes of counties in four U.S. states using a One-Way ANOVA. The analysis produces a p-value of 0.012. Write a brief conclusion in context.",
+      "points_possible": 3,
+      "instructions": "Answer in 2-3 sentences.",
+      "correct_answer": null,
+      "grading_note": "Manual grading required. Expected answer: With a p-value of 0.012, which is below the standard significance level of 0.05, we reject the null hypothesis. There is statistically significant evidence that the average county population size differs across at least two of the four states (California, Oregon, Washington, and Nevada). A post-hoc test such as Tukey's HSD could be used to identify which specific states differ."
+    }
+  ]
+}

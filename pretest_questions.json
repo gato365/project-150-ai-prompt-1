@@ -1,0 +1,94 @@
+{
+  "quiz_metadata": {
+    "title": "One-Way ANOVA Pre-Test",
+    "description": "Answer the following questions based on your current understanding. You are not expected to have prior knowledge of One-Way ANOVA. Answer to the best of your ability.",
+    "time_limit_minutes": 15,
+    "allowed_attempts": 1,
+    "calculator_allowed": false,
+    "quiz_type": "assignment",
+    "shuffle_answers": false
+  },
+  "shared_stimulus": {
+    "applies_to_questions": [1, 2, 3, 4, 5, 6],
+    "text": "A researcher is conducting a comparative statistical study to evaluate whether mean exam scores differ significantly across four distinct teaching methods. The study includes a total sample of 200 students, with 50 students randomly assigned to each instructional method to ensure balanced group sizes. After a standardized final exam scored on a 100-point scale, the average scores were as follows: Method A (traditional lecture) had a mean score of 78.4 (SD = 8.6), Method B (interactive discussion) had a mean of 82.1 (SD = 7.9), Method C (blended learning) produced a mean of 85.3 (SD = 6.8), and Method D (fully online instruction) had a mean of 76.9 (SD = 9.4). To determine whether these observed differences in group means are statistically significant, the researcher plans to conduct a statistical test to analyze their results."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice_question",
+      "title": "When to Use One-Way ANOVA",
+      "question_text": "Which statistical method is most appropriate?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "One-sample t-test", "weight": 0 },
+        { "id": "B", "text": "Paired t-test", "weight": 0 },
+        { "id": "C", "text": "One-Way ANOVA", "weight": 100 },
+        { "id": "D", "text": "Linear regression", "weight": 0 },
+        { "id": "E", "text": "Two Independent Population Means Test", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice_question",
+      "title": "Variables and Structure",
+      "question_text": "In a One-Way ANOVA, which of the following correctly describes the variables involved?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "One continuous explanatory variable and one categorical response variable", "weight": 0 },
+        { "id": "B", "text": "One categorical explanatory variable with two or more levels and one continuous response variable", "weight": 100 },
+        { "id": "C", "text": "Two continuous variables", "weight": 0 },
+        { "id": "D", "text": "Multiple categorical response variables", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 3,
+      "type": "essay_question",
+      "title": "Hypotheses",
+      "question_text": "In words, what is the null hypothesis in a One-Way ANOVA?",
+      "points_possible": 2,
+      "instructions": "Answer in 1-2 sentences.",
+      "correct_answer": null,
+      "grading_note": "Manual grading required. Expected answer: The null hypothesis states that the population means of all groups are equal (i.e., there is no difference in mean exam scores across the four teaching methods)."
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice_question",
+      "title": "Variability",
+      "question_text": "The F-statistic in a One-Way ANOVA is based on the comparison between:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Sample means and population means", "weight": 0 },
+        { "id": "B", "text": "Within-group variability and sample size", "weight": 0 },
+        { "id": "C", "text": "Between-group variability and within-group variability", "weight": 100 },
+        { "id": "D", "text": "Standard deviation and variance", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice_question",
+      "title": "Assumptions",
+      "question_text": "Which of the following is NOT a standard assumption of One-Way ANOVA?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Observations are independent", "weight": 0 },
+        { "id": "B", "text": "Groups have approximately equal variances", "weight": 0 },
+        { "id": "C", "text": "The response variable is normally distributed within each group", "weight": 0 },
+        { "id": "D", "text": "The explanatory variable must be normally distributed", "weight": 100 }
+      ],
+      "correct_answer_id": "D"
+    },
+    {
+      "id": 6,
+      "type": "essay_question",
+      "title": "Interpretation",
+      "question_text": "Suppose a One-Way ANOVA produces a very small p-value (i.e., 0.00023). What does this suggest about the group means?",
+      "points_possible": 2,
+      "instructions": "Answer in 1-2 sentences.",
+      "correct_answer": null,
+      "grading_note": "Manual grading required. Expected answer: A very small p-value provides strong evidence against the null hypothesis, suggesting that at least one group mean is significantly different from the others (i.e., teaching method has a statistically significant effect on exam scores)."
+    }
+  ]
+}
