@@ -37,17 +37,36 @@ Analysis Plan: https://samottobiz.shinyapps.io/ai-research-spring-2026-sjo/
 
 
 ### i. Experiment process
+
+
 1. Consent form (paper)
-2. Pretest (Canvas) *
+2. Pretest (Canvas) * they did it last 10 minutes of previous class 
+--------
+I give a lesson on go through an example of one-way anova (PSO, TOV, RV/EV,...)
+**
 3. Treatment, specification, and learning
     1. Guide to use ChatGPT CSU (maybe HTML)
     2. Determine and informed which group each student in (TBD, maybe HTML)
     3. Video or/and notes to specify how to use simple technique based on group (TBD, HTML, maybe)
-4. Complete activity using AI group technique(TBD)
-5. Send prompts to (Microsoft forms)
-6. Post test(Canvas)
+4. [Need to create] Complete activity using AI group technique (TBD)
+    - instructions
+    - "learn one-way anova"
+        - control give notes or something ***
+-----
+5. Post test (Canvas)
+6. Send prompts to feedback survey (Microsoft forms)
+    - How to send the prompt (provide copy chat guidance)
+7. Exit presentation/debrief
+    - what they experienced
+    - give them heads up of benefits
 
 * we have to have a system to extract the canvas quiz and then specify what group they belong to beforehand and then email it to them. This is not hard, but can be a little bit tricky
+
+** they would have seen chi square tests and 1 & 2 pop inference
+
+*** control group is trust, not graded
+
+9. Then teach it to them
 
 ### ii. Data collection
 1. Get pre and post data from Canvas
