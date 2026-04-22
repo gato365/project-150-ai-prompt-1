@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT 252 — Debrief: One-Way ANOVA</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:wght@300;400;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --green: #154734;
+    --gold: #C69214;
+    --cream: #faf8f2;
+    --ink: #1c1c1c;
+    --muted: #666;
+    --border: #ddd5c2;
+    --surface: #fff;
+    --control-bg: #edf7f2; --control-border: #7ec8a4; --control-ink: #1a5c36;
+    --nos-bg: #fdf2ee;     --nos-border: #e8a890;    --nos-ink: #8b3010;
+    --str-bg: #eef2fb;     --str-border: #8aaae0;    --str-ink: #1a3a7c;
+    --slide-duration: 0.45s;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--green);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 36px;
+    border-bottom: 3px solid var(--gold);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .topbar-left { display: flex; align-items: center; gap: 14px; }
+  .topbar-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+  }
+  .topbar-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    opacity: 0.65;
+    letter-spacing: 0.06em;
+  }
+  .slide-counter {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+  }
+  .nav-btns { display: flex; gap: 8px; }
+  .nav-btn {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    transition: background 0.15s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.22); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* ── SLIDE CONTAINER ── */
+  .slides { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .slide { display: none; animation: slideIn var(--slide-duration) ease; }
+  .slide.active { display: block; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SLIDE TYPOGRAPHY ── */
+  .slide-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .slide-subtitle {
+    font-size: 1.05rem;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 36px;
+    line-height: 1.5;
+  }
+
+  /* ── CARDS / SURFACES ── */
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+  }
+  .card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    color: var(--green);
+    margin-bottom: 10px;
+  }
+  p { font-size: 0.95rem; line-height: 1.75; color: #333; margin-bottom: 10px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── GROUP COLUMNS ── */
+  .group-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px;
+    margin: 24px 0;
+  }
+  .group-col {
+    border-radius: 10px;
+    padding: 20px 22px;
+    border: 1.5px solid;
+  }
+  .group-col.control { background: var(--control-bg); border-color: var(--control-border); color: var(--control-ink); }
+  .group-col.nostructure { background: var(--nos-bg); border-color: var(--nos-border); color: var(--nos-ink); }
+  .group-col.structure { background: var(--str-bg); border-color: var(--str-border); color: var(--str-ink); }
+
+  .group-col .gc-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.6; margin-bottom: 4px; }
+  .group-col .gc-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; margin-bottom: 12px; }
+  .group-col p { color: inherit; font-size: 0.875rem; line-height: 1.6; }
+
+  /* ── DIAGRAM AREA ── */
+  .diagram-section {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 24px 0;
+  }
+  .diagram-row {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .diagram-box {
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+    max-width: 280px;
+  }
+  .diagram-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  /* ── SVG DOT PLOTS ── */
+  .dotplot-svg { width: 100%; max-width: 240px; height: 160px; }
+
+  /* ── F-RATIO DISPLAY ── */
+  .fratio-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  .fratio-fraction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .fratio-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--green);
+    border-bottom: 3px solid var(--ink);
+    padding-bottom: 4px;
+    min-width: 160px;
+    text-align: center;
+  }
+  .fratio-den {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--green);
+    padding-top: 4px;
+    min-width: 160px;
+    text-align: center;
+  }
+  .fratio-eq { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--muted); }
+
+  /* ── F IMPLICATIONS TABLE ── */
+  .f-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  .f-table th {
+    background: var(--green); color: white; padding: 11px 16px;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em;
+    font-weight: 500; text-align: left;
+  }
+  .f-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 0.875rem; line-height: 1.5; }
+  .f-table tr:nth-child(even) td { background: #f7f5f0; }
+  .f-table tr:last-child td { border-bottom: none; }
+  .f-value { font-family: 'DM Mono', monospace; font-weight: 500; font-size: 1rem; color: var(--green); }
+
+  /* ── PROMPT EXAMPLES ── */
+  .prompt-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .prompt-box { border-radius: 8px; padding: 18px 20px; }
+  .prompt-box.nos { background: var(--nos-bg); border: 1.5px solid var(--nos-border); }
+  .prompt-box.str { background: var(--str-bg); border: 1.5px solid var(--str-border); }
+  .prompt-box .pb-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+  .prompt-box.nos .pb-label { color: var(--nos-ink); }
+  .prompt-box.str .pb-label { color: var(--str-ink); }
+  .prompt-text {
+    font-family: 'DM Mono', monospace; font-size: 0.78rem; line-height: 1.65;
+    background: white; border-radius: 6px; padding: 12px 14px;
+  }
+  .prompt-box.nos .prompt-text { border: 1px solid var(--nos-border); color: #5c2010; }
+  .prompt-box.str .prompt-text { border: 1px solid var(--str-border); color: #1a2a5c; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    border-left: 4px solid var(--gold);
+    background: #fffbea;
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: #5a4000;
+  }
+
+  /* ── PROGRESS DOTS ── */
+  .progress-bar {
+    display: flex; gap: 6px; justify-content: center;
+    margin-bottom: 32px;
+  }
+  .prog-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--border); transition: all 0.3s;
+    cursor: pointer;
+  }
+  .prog-dot.active { background: var(--gold); transform: scale(1.4); }
+  .prog-dot.done { background: var(--green); }
+
+  /* ── KEY POINT ── */
+  .key-point {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--green);
+    text-align: center;
+    padding: 24px 32px;
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    background: white;
+    margin: 24px 0;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 700px) {
+    .slide-title { font-size: 1.7rem; }
+    .group-cols { grid-template-columns: 1fr; }
+    .prompt-compare { grid-template-columns: 1fr; }
+    .topbar { padding: 12px 16px; }
+    .topbar-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div>
+      <div class="topbar-logo">STAT 252 — Debrief</div>
+      <div class="topbar-sub">One-Way ANOVA · Within &amp; Between Variability</div>
+    </div>
+  </div>
+  <div style="display:flex; align-items:center; gap:20px;">
+    <span class="slide-counter" id="counter">1 / 7</span>
+    <div class="nav-btns">
+      <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>← Prev</button>
+      <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<div class="slides">
+
+  <div class="progress-bar" id="progress-bar"></div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 1: What You Just Did -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-eyebrow">Debrief · Slide 1 of 7</div>
+    <div class="slide-title">What you just experienced</div>
+    <div class="slide-subtitle">Three different paths to the same destination</div>
+
+    <div class="group-cols">
+      <div class="group-col control">
+        <div class="gc-label">Group A</div>
+        <div class="gc-name">📖 Control</div>
+        <p>You used <strong>reference notes only</strong> — no AI, no internet. You relied entirely on your own reading and reasoning to answer the questions.</p>
+      </div>
+      <div class="group-col nostructure">
+        <div class="gc-label">Group B</div>
+        <div class="gc-name">🤖 No Structure</div>
+        <p>You used <strong>CSU ChatGPT freely</strong> — asking whatever questions came to mind with no required format. Pure exploration.</p>
+      </div>
+      <div class="group-col structure">
+        <div class="gc-label">Group C</div>
+        <div class="gc-name">🧭 Structured (RTF)</div>
+        <p>You used <strong>CSU ChatGPT with RTF prompting</strong> — Role, Task, Format — a structured technique for getting better AI responses.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Why does it matter?</strong> We don't yet know which approach leads to better learning. That's the research question — and your data will help answer it. The post-test you just took measures what you actually retained.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 2: Prompting Techniques Side by Side -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-eyebrow">Debrief · Slide 2 of 7</div>
+    <div class="slide-title">The prompting techniques</div>
+    <div class="slide-subtitle">What Groups B and C were doing — and why the difference matters</div>
+
+    <div class="prompt-compare">
+      <div class="prompt-box nos">
+        <div class="pb-label">🤖 No Structure — Example Prompt</div>
+        <div class="prompt-text">Can you explain within-group and between-group variability for ANOVA?</div>
+      </div>
+      <div class="prompt-box str">
+        <div class="pb-label">🧭 Structured RTF — Same Prompt</div>
+        <div class="prompt-text">Act as a patient statistics professor.
+
+Teach me the difference between within-group and between-group variability in one-way ANOVA.
+
+Use a concrete real-world example and define all key terms clearly.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>What is RTF?</h3>
+      <p><strong>Role:</strong> Establish who the AI should be ("Act as a patient statistics professor"). This shapes tone, depth, and vocabulary.</p>
+      <p><strong>Task:</strong> Be specific about what you want ("Teach me the difference between..."). Vague tasks produce vague answers.</p>
+      <p><strong>Format:</strong> Specify how you want the response ("Use a concrete example and define all key terms"). AI follows formatting instructions precisely.</p>
+    </div>
+
+    <div class="callout">
+      The same underlying knowledge is available to both groups — but the way you ask shapes what you get back. RTF isn't magic; it's just intentional.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 3: Within-Group Variability (with diagram) -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-eyebrow">Debrief · Slide 3 of 7</div>
+    <div class="slide-title">Within-group variability</div>
+    <div class="slide-subtitle">The noise — how much individuals differ from their own group</div>
+
+    <div class="diagram-section">
+      <div class="diagram-title" style="text-align:center; margin-bottom: 20px;">
+        Each dot is a student. Each bar is a group mean (x̄₁, x̄₂, x̄₃). The dashed line is the grand mean (x̄).
+      </div>
+      <div class="diagram-row">
+        <div class="diagram-box">
+          <div class="diagram-title">High Within-Group Variability</div>
+          <!-- Dot plot: spread dots, means close to grand mean -->
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <!-- axes -->
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <!-- grand mean -->
+            <line x1="30" y1="80" x2="220" y2="80" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="224" y="84" font-size="10" fill="#888" font-family="serif" font-style="italic">x̄</text>
+            <!-- Group 1 (blue) — wide spread -->
+            <g fill="#2a4fa8" opacity="0.85">
+              <circle cx="65" cy="25" r="5"/>
+              <circle cx="65" cy="45" r="5"/>
+              <circle cx="65" cy="65" r="5"/>
+              <circle cx="65" cy="95" r="5"/>
+              <circle cx="65" cy="115" r="5"/>
+              <circle cx="65" cy="130" r="5"/>
+            </g>
+            <line x1="50" y1="77" x2="80" y2="77" stroke="#2a4fa8" stroke-width="2.5"/>
+            <text x="84" y="81" font-size="10" fill="#2a4fa8" font-family="serif" font-style="italic">x̄₁</text>
+            <!-- Group 2 (red) -->
+            <g fill="#c0392b" opacity="0.85">
+              <circle cx="130" cy="20" r="5"/>
+              <circle cx="130" cy="50" r="5"/>
+              <circle cx="130" cy="78" r="5"/>
+              <circle cx="130" cy="100" r="5"/>
+              <circle cx="130" cy="120" r="5"/>
+              <circle cx="130" cy="135" r="5"/>
+            </g>
+            <line x1="115" y1="84" x2="145" y2="84" stroke="#c0392b" stroke-width="2.5"/>
+            <text x="148" y="88" font-size="10" fill="#c0392b" font-family="serif" font-style="italic">x̄₂</text>
+            <!-- Group 3 (green) -->
+            <g fill="#1a7a40" opacity="0.85">
+              <circle cx="195" cy="30" r="5"/>
+              <circle cx="195" cy="55" r="5"/>
+              <circle cx="195" cy="75" r="5"/>
+              <circle cx="195" cy="98" r="5"/>
+              <circle cx="195" cy="118" r="5"/>
+              <circle cx="195" cy="133" r="5"/>
+            </g>
+            <line x1="180" y1="79" x2="210" y2="79" stroke="#1a7a40" stroke-width="2.5"/>
+            <text x="175" y="73" font-size="10" fill="#1a7a40" font-family="serif" font-style="italic">x̄₃</text>
+          </svg>
+          <p style="font-size:0.78rem; color: var(--muted); margin-top: 8px;">Lots of spread <em>within</em> each group. Hard to tell groups apart.</p>
+        </div>
+
+        <div class="diagram-box">
+          <div class="diagram-title">Low Within-Group Variability</div>
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="80" x2="220" y2="80" stroke="#888" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="224" y="84" font-size="10" fill="#888" font-family="serif" font-style="italic">x̄</text>
+            <!-- Group 1 tight cluster high -->
+            <g fill="#2a4fa8" opacity="0.85">
+              <circle cx="65" cy="28" r="5"/>
+              <circle cx="65" cy="36" r="5"/>
+              <circle cx="65" cy="44" r="5"/>
+              <circle cx="65" cy="20" r="5"/>
+              <circle cx="65" cy="52" r="5"/>
+            </g>
+            <line x1="50" y1="36" x2="80" y2="36" stroke="#2a4fa8" stroke-width="2.5"/>
+            <text x="84" y="40" font-size="10" fill="#2a4fa8" font-family="serif" font-style="italic">x̄₁</text>
+            <!-- Group 2 tight cluster mid -->
+            <g fill="#c0392b" opacity="0.85">
+              <circle cx="130" cy="76" r="5"/>
+              <circle cx="130" cy="84" r="5"/>
+              <circle cx="130" cy="68" r="5"/>
+              <circle cx="130" cy="92" r="5"/>
+              <circle cx="130" cy="60" r="5"/>
+            </g>
+            <line x1="115" y1="76" x2="145" y2="76" stroke="#c0392b" stroke-width="2.5"/>
+            <text x="148" y="80" font-size="10" fill="#c0392b" font-family="serif" font-style="italic">x̄₂</text>
+            <!-- Group 3 tight cluster low -->
+            <g fill="#1a7a40" opacity="0.85">
+              <circle cx="195" cy="108" r="5"/>
+              <circle cx="195" cy="116" r="5"/>
+              <circle cx="195" cy="100" r="5"/>
+              <circle cx="195" cy="124" r="5"/>
+              <circle cx="195" cy="132" r="5"/>
+            </g>
+            <line x1="180" y1="116" x2="210" y2="116" stroke="#1a7a40" stroke-width="2.5"/>
+            <text x="175" y="110" font-size="10" fill="#1a7a40" font-family="serif" font-style="italic">x̄₃</text>
+          </svg>
+          <p style="font-size:0.78rem; color: var(--muted); margin-top: 8px;">Tight clusters. Group differences are easy to detect.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>What within-group variability measures</h3>
+      <p>Within-group variability captures how much individual observations scatter around their <em>own group mean</em>. It is the background noise of the test — variation that has nothing to do with which group a person belongs to.</p>
+      <p>In the F-ratio, within-group variability is the <strong>denominator</strong>. Large within-group noise makes it harder to detect real group differences.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 4: Between-Group Variability -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-eyebrow">Debrief · Slide 4 of 7</div>
+    <div class="slide-title">Between-group variability</div>
+    <div class="slide-subtitle">The signal — how much group means differ from the grand mean</div>
+
+    <div class="diagram-section">
+      <div class="diagram-title" style="text-align: center; margin-bottom: 16px;">
+        Between-group variability = deviations of each x̄ᵢ from x̄ (grand mean)
+      </div>
+      <div class="diagram-row">
+        <div class="diagram-box">
+          <div class="diagram-title">Low Between-Group Variability</div>
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="80" x2="220" y2="80" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <text x="224" y="84" font-size="10" fill="#888" font-family="serif" font-style="italic">x̄</text>
+            <!-- All three means close to grand mean -->
+            <line x1="50" y1="72" x2="80" y2="72" stroke="#2a4fa8" stroke-width="3"/>
+            <text x="84" y="76" font-size="10" fill="#2a4fa8" font-style="italic">x̄₁</text>
+            <line x1="115" y1="80" x2="145" y2="80" stroke="#c0392b" stroke-width="3"/>
+            <text x="148" y="84" font-size="10" fill="#c0392b" font-style="italic">x̄₂</text>
+            <line x1="180" y1="86" x2="210" y2="86" stroke="#1a7a40" stroke-width="3"/>
+            <text x="175" y="100" font-size="10" fill="#1a7a40" font-style="italic">x̄₃</text>
+            <!-- Arrow from x̄₁ to grand mean -->
+            <line x1="65" y1="72" x2="65" y2="80" stroke="#2a4fa8" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+          </svg>
+          <p style="font-size:0.78rem; color: var(--muted); margin-top: 8px;">Group means are all near the grand mean. Little signal.</p>
+        </div>
+        <div class="diagram-box">
+          <div class="diagram-title">High Between-Group Variability</div>
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#888"/>
+              </marker>
+            </defs>
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="80" x2="220" y2="80" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3"/>
+            <text x="224" y="84" font-size="10" fill="#888" font-family="serif" font-style="italic">x̄</text>
+            <!-- Spread means -->
+            <line x1="50" y1="30" x2="80" y2="30" stroke="#2a4fa8" stroke-width="3"/>
+            <text x="84" y="34" font-size="10" fill="#2a4fa8" font-style="italic">x̄₁</text>
+            <line x1="115" y1="80" x2="145" y2="80" stroke="#c0392b" stroke-width="3"/>
+            <text x="148" y="84" font-size="10" fill="#c0392b" font-style="italic">x̄₂</text>
+            <line x1="180" y1="125" x2="210" y2="125" stroke="#1a7a40" stroke-width="3"/>
+            <text x="175" y="118" font-size="10" fill="#1a7a40" font-style="italic">x̄₃</text>
+            <!-- Deviation arrows -->
+            <line x1="65" y1="30" x2="65" y2="78" stroke="#2a4fa8" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <line x1="195" y1="125" x2="195" y2="82" stroke="#1a7a40" stroke-width="1.5" stroke-dasharray="3,2"/>
+          </svg>
+          <p style="font-size:0.78rem; color: var(--muted); margin-top: 8px;">Group means spread far from grand mean. Strong signal.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>What between-group variability measures</h3>
+      <p>Between-group variability captures how much the <em>group means themselves</em> vary around the grand mean. This is the signal — if the groups were truly the same, their means would cluster near the grand mean.</p>
+      <p>In the F-ratio, between-group variability is the <strong>numerator</strong>. A large numerator means the groups are genuinely different — or at least appear to be.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 5: The F-Ratio -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-eyebrow">Debrief · Slide 5 of 7</div>
+    <div class="slide-title">The F-ratio</div>
+    <div class="slide-subtitle">Signal over noise — and what each value means</div>
+
+    <div class="card">
+      <div class="fratio-display">
+        <div class="fratio-fraction">
+          <div class="fratio-num">Between-Group Variability</div>
+          <div class="fratio-den">Within-Group Variability</div>
+        </div>
+        <div class="fratio-eq">=</div>
+        <div style="font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--green);">F</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Interpreting F</h3>
+      <table class="f-table">
+        <thead>
+          <tr>
+            <th>Value</th>
+            <th>What it means</th>
+            <th>Implication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="f-value">F >> 1</span></td>
+            <td>Between-group differences are large relative to within-group noise</td>
+            <td>Evidence that at least one group mean is different — reject H₀</td>
+          </tr>
+          <tr>
+            <td><span class="f-value">F ≈ 1</span></td>
+            <td>Between-group variability ≈ within-group variability</td>
+            <td>No evidence of group differences — consistent with H₀</td>
+          </tr>
+          <tr>
+            <td><span class="f-value">F &lt; 1</span></td>
+            <td>Within-group noise exceeds between-group signal</td>
+            <td>Rare in practice; suggests sampling variability or violated assumptions</td>
+          </tr>
+          <tr>
+            <td><span class="f-value">F &lt; 0</span></td>
+            <td>Impossible</td>
+            <td>Both numerator and denominator are sums of squares — always ≥ 0. F cannot be negative.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="key-point">
+      "A large F doesn't prove the groups are different — it tells us the observed differences are unlikely to be explained by chance alone."
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 6: Equal Variance Condition -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-eyebrow">Debrief · Slide 6 of 7</div>
+    <div class="slide-title">The equal variance condition</div>
+    <div class="slide-subtitle">Why ANOVA requires roughly equal within-group spread</div>
+
+    <div class="card">
+      <h3>The condition</h3>
+      <p>ANOVA pools the within-group variability from all groups into a single estimate — the <strong>Mean Square Error (MSE)</strong>. This pooling only makes sense if within-group spread is roughly equal across groups.</p>
+      <p>If one group has much larger within-group variability than others, the pooled estimate is distorted — and the F-ratio becomes unreliable.</p>
+    </div>
+
+    <div class="diagram-section">
+      <div class="diagram-row">
+        <div class="diagram-box">
+          <div class="diagram-title">✓ Equal Variance — ANOVA valid</div>
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <g fill="#2a4fa8" opacity="0.8"><circle cx="65" cy="28" r="5"/><circle cx="65" cy="40" r="5"/><circle cx="65" cy="52" r="5"/><circle cx="65" cy="20" r="5"/></g>
+            <g fill="#c0392b" opacity="0.8"><circle cx="130" cy="70" r="5"/><circle cx="130" cy="82" r="5"/><circle cx="130" cy="58" r="5"/><circle cx="130" cy="94" r="5"/></g>
+            <g fill="#1a7a40" opacity="0.8"><circle cx="195" cy="110" r="5"/><circle cx="195" cy="122" r="5"/><circle cx="195" cy="98" r="5"/><circle cx="195" cy="130" r="5"/></g>
+            <text x="40" y="155" font-size="9" fill="#666">Similar spread in all groups</text>
+          </svg>
+        </div>
+        <div class="diagram-box">
+          <div class="diagram-title">✗ Unequal Variance — ANOVA questionable</div>
+          <svg class="dotplot-svg" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+            <line x1="30" y1="10" x2="30" y2="140" stroke="#333" stroke-width="1.5"/>
+            <line x1="30" y1="140" x2="220" y2="140" stroke="#333" stroke-width="1.5"/>
+            <g fill="#2a4fa8" opacity="0.8"><circle cx="65" cy="35" r="5"/><circle cx="65" cy="38" r="5"/><circle cx="65" cy="32" r="5"/><circle cx="65" cy="41" r="5"/></g>
+            <g fill="#c0392b" opacity="0.8"><circle cx="130" cy="15" r="5"/><circle cx="130" cy="45" r="5"/><circle cx="130" cy="75" r="5"/><circle cx="130" cy="105" r="5"/><circle cx="130" cy="130" r="5"/></g>
+            <g fill="#1a7a40" opacity="0.8"><circle cx="195" cy="110" r="5"/><circle cx="195" cy="113" r="5"/><circle cx="195" cy="107" r="5"/><circle cx="195" cy="116" r="5"/></g>
+            <text x="25" y="155" font-size="9" fill="#c0392b">Group 2 much more spread — violates assumption</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Rule of thumb:</strong> If the largest group standard deviation is no more than twice the smallest, the equal variance assumption is reasonable. You can check this in R with <code>leveneTest()</code> from the <code>car</code> package.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════ -->
+  <!-- SLIDE 7: AI Quality — The Bigger Picture -->
+  <!-- ══════════════════════════════════════════════════ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-eyebrow">Debrief · Slide 7 of 7</div>
+    <div class="slide-title">AI, prompting, and learning</div>
+    <div class="slide-subtitle">Three things that determine whether AI helps you understand statistics</div>
+
+    <div class="group-cols">
+      <div class="group-col control" style="border-color: var(--gold); background: #fffbea; color: #5a4000;">
+        <div class="gc-label">Factor 1</div>
+        <div class="gc-name" style="color: #5a4000;">The Technique</div>
+        <p>How you structure your prompt. RTF, chain-of-thought, asking for examples — technique shapes what the AI produces, independent of content.</p>
+      </div>
+      <div class="group-col nostructure" style="border-color: #888; background: #f5f5f5; color: #333;">
+        <div class="gc-label">Factor 2</div>
+        <div class="gc-name" style="color: #333;">The Information</div>
+        <p>What domain knowledge you bring to the conversation. The more precisely you can describe what you want to know, the better the AI's response.</p>
+      </div>
+      <div class="group-col structure" style="border-color: var(--green); background: #edf7f2; color: var(--green);">
+        <div class="gc-label">Factor 3</div>
+        <div class="gc-name">Your Understanding</div>
+        <p>Whether you can recognize a good answer when you see one — and know when to push back. AI can be wrong. Critical evaluation is yours to do.</p>
+      </div>
+    </div>
+
+    <div class="key-point">
+      Using the right technique + providing the right information still doesn't guarantee understanding — that last step is entirely on you.
+    </div>
+
+    <div class="callout">
+      <strong>What comes next:</strong> We'll analyze your pre/post scores and prompt data over the coming weeks. Results will be shared with the class (anonymized) and will inform future AI integration in STAT courses at Cal Poly. Thank you for participating — your data matters.
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<script>
+  const totalSlides = 7;
+  let current = 1;
+
+  // Build progress dots
+  const bar = document.getElementById('progress-bar');
+  for (let i = 1; i <= totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'prog-dot' + (i === 1 ? ' active' : '');
+    dot.onclick = () => goToSlide(i);
+    dot.id = `dot-${i}`;
+    bar.appendChild(dot);
+  }
+
+  function goToSlide(n) {
+    document.getElementById(`slide-${current}`).classList.remove('active');
+    document.getElementById(`dot-${current}`).classList.remove('active');
+    document.getElementById(`dot-${current}`).classList.add('done');
+
+    current = n;
+    document.getElementById(`slide-${current}`).classList.add('active');
+    document.getElementById(`dot-${current}`).classList.remove('done');
+    document.getElementById(`dot-${current}`).classList.add('active');
+
+    document.getElementById('counter').textContent = `${current} / ${totalSlides}`;
+    document.getElementById('btn-prev').disabled = current === 1;
+    document.getElementById('btn-next').disabled = current === totalSlides;
+    document.getElementById('btn-next').textContent = current === totalSlides ? 'Done ✓' : 'Next →';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 1 && next <= totalSlides) goToSlide(next);
+  }
+
+  // Keyboard nav
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   changeSlide(-1);
+  });
+</script>
+</body>
+</html>

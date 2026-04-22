@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT 252 — AI Learning Experiment</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --green: #154734;
+    --gold: #C69214;
+    --gold-light: #e8b84b;
+    --cream: #faf8f3;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --border: #ddd8cc;
+    --surface: #ffffff;
+    --control-accent: #2d6a4f;
+    --nostructure-accent: #b5451b;
+    --structure-accent: #1a4e8c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--green);
+    color: white;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-bottom: 4px solid var(--gold);
+  }
+  .header-badge {
+    width: 52px; height: 52px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: var(--green); font-weight: bold;
+    flex-shrink: 0;
+  }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; font-weight: 400; }
+  header p { font-size: 0.8rem; opacity: 0.75; margin-top: 3px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em; }
+
+  /* ── MAIN WRAPPER ── */
+  main { max-width: 780px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ── SECTION ── */
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 40px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--green);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  p { line-height: 1.7; color: #333; margin-bottom: 12px; font-size: 0.95rem; }
+  p:last-child { margin-bottom: 0; }
+
+  .label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  /* ── INPUT ── */
+  .input-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-top: 20px; }
+  input[type="text"] {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.6rem;
+    letter-spacing: 0.25em;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    width: 180px;
+    text-align: center;
+    background: var(--cream);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--green); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-primary { background: var(--green); color: white; }
+  .btn-primary:hover { background: #1d5c42; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(21,71,52,0.25); }
+  .btn-next { background: var(--gold); color: var(--green); }
+  .btn-next:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  /* ── ERROR ── */
+  .error-msg {
+    display: none;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: #fff0ee;
+    border: 1px solid #f5c6c0;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #c0392b;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── GROUP BADGE ── */
+  .group-banner {
+    border-radius: 10px;
+    padding: 20px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .group-banner .icon { font-size: 2rem; }
+  .group-banner .group-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 2px; opacity: 0.7; }
+  .group-banner .group-name { font-family: 'DM Serif Display', serif; font-size: 1.4rem; }
+
+  .banner-control { background: #edf7f2; border: 1.5px solid #a8d5be; color: var(--control-accent); }
+  .banner-nostructure { background: #fdf2ee; border: 1.5px solid #e8b09a; color: var(--nostructure-accent); }
+  .banner-structure { background: #eef2fb; border: 1.5px solid #a8bce8; color: var(--structure-accent); }
+
+  /* ── STEP INDICATOR ── */
+  .step-indicator {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    align-items: center;
+  }
+  .step-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .step-dot.done { background: var(--green); }
+  .step-dot.current { background: var(--gold); width: 24px; border-radius: 4px; }
+  .step-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--muted); margin-left: 6px; }
+
+  /* ── CONCEPT BOX ── */
+  .concept-box {
+    background: var(--cream);
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+  .concept-box strong { color: var(--green); }
+
+  /* ── DIAGRAM ── */
+  .diagram-row {
+    display: flex;
+    gap: 24px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .diagram-box {
+    flex: 1;
+    min-width: 200px;
+    background: var(--cream);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+  }
+  .diagram-box .diagram-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 12px; text-transform: uppercase; }
+
+  /* Mini dot-plot SVG styles */
+  svg.dotplot { width: 100%; max-width: 200px; height: 120px; }
+
+  /* ── F-RATIO TABLE ── */
+  .fratio-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.875rem; }
+  .fratio-table th { background: var(--green); color: white; padding: 10px 14px; text-align: left; font-weight: 500; font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.05em; }
+  .fratio-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .fratio-table tr:last-child td { border-bottom: none; }
+  .fratio-table tr:nth-child(even) td { background: #f7f5f0; }
+
+  /* ── PROMPT GUIDE (RTF) ── */
+  .prompt-guide {
+    background: #f0f4ff;
+    border: 1.5px solid #c0ceef;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 20px 0;
+  }
+  .prompt-guide .pg-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: #5c6bc0; margin-bottom: 10px; }
+  .prompt-block {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    background: white;
+    border: 1px solid #d0d8ef;
+    border-radius: 6px;
+    padding: 14px 16px;
+    line-height: 1.7;
+    color: #2c3e6b;
+    margin: 8px 0;
+    position: relative;
+    white-space: pre-wrap;
+  }
+  .prompt-block .fill { color: var(--nostructure-accent); font-style: italic; }
+
+  /* ── ACTIVITY QUESTIONS ── */
+  .question-block {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+    background: var(--surface);
+  }
+  .q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .q-text { font-size: 0.95rem; line-height: 1.65; color: var(--ink); }
+  textarea {
+    width: 100%;
+    margin-top: 12px;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    resize: vertical;
+    min-height: 80px;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  textarea:focus { border-color: var(--green); }
+  textarea::placeholder { color: #aaa; }
+
+  /* ── DIVIDER ── */
+  .divider { border: none; border-top: 1.5px solid var(--border); margin: 28px 0; }
+
+  /* ── NOTE BOX ── */
+  .note-box {
+    background: #fffbea;
+    border: 1.5px solid #f0d87a;
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #7a5c00;
+    margin: 16px 0;
+  }
+  .note-box strong { color: #5a4000; }
+
+  /* ── COMPLETION ── */
+  .completion-check {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .check-circle {
+    width: 80px; height: 80px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+  /* ── CONTROL SLIDES ── */
+  .ctrl-slide { display: none; animation: fadeIn 0.3s ease; }
+  .ctrl-slide.active { display: block; }
+  .slide-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding-top: 16px; border-top: 1.5px solid var(--border); }
+  .slide-counter { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted); }
+  .btn-slide { font-size: 0.82rem; padding: 10px 20px; }
+  .slide-title { font-family: 'DM Serif Display', serif; font-size: 1.12rem; color: var(--control-accent); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #a8d5be; }
+  .vis-wrap { background: var(--cream); border: 1.5px solid var(--border); border-radius: 10px; padding: 16px 12px 8px; margin: 16px 0; }
+  .vis-caption { text-align: center; font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px; }
+  .fratio-box { background: var(--green); color: white; border-radius: 10px; padding: 18px 24px; text-align: center; margin: 16px 0; }
+  .fratio-box .f-formula { font-family: 'DM Serif Display', serif; font-size: 2rem; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .fratio-box .f-sub { font-size: 0.78rem; opacity: 0.8; font-family: 'DM Mono', monospace; }
+  .interp-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin: 12px 0; }
+  .interp-table th { background: #edf7f2; color: var(--control-accent); padding: 9px 14px; text-align: left; font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; border-bottom: 2px solid #a8d5be; }
+  .interp-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
+  .interp-table tr:last-child td { border-bottom: none; }
+  .check-q { background: #edf7f2; border: 1.5px solid #a8d5be; border-radius: 8px; padding: 14px 18px; margin-bottom: 12px; }
+  .check-q .cq-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--control-accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 5px; }
+  .check-q .cq-text { font-size: 0.92rem; line-height: 1.65; }
+  .diagram-pair { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+  .diagram-pair .vis-wrap { flex: 1; min-width: 220px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header { padding: 20px; }
+    main { padding: 28px 16px 60px; }
+    .card { padding: 24px 20px; }
+    input[type="text"] { font-size: 1.2rem; width: 140px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">Σ</div>
+  <div>
+    <h1>STAT 252 — AI Learning Experiment</h1>
+    <p>Spring 2026 · Cal Poly SLO · One-Way ANOVA</p>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SECTION 0: ENTRY / CODE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="section active" id="sec-entry">
+  <div class="card">
+    <div class="label">Step 1 of 5</div>
+    <h2>Welcome to today's activity</h2>
+    <p>Your instructor has assigned you a 4-digit participant code. Enter it below to get started. Your code determines which learning experience you'll have today.</p>
+    <p>Keep your code handy — you'll need it again when submitting your prompts at the end.</p>
+
+    <div class="input-row">
+      <div>
+        <div class="label">Your participant code</div>
+        <input type="text" id="code-input" maxlength="4" placeholder="0000" autocomplete="off" />
+      </div>
+      <button class="btn btn-primary" onclick="submitCode()">Begin →</button>
+    </div>
+    <div class="error-msg" id="code-error">That code wasn't recognized. Please check with your instructor.</div>
+  </div>
+
+  <div class="note-box">
+    <strong>Before you start:</strong> Make sure you are logged into <strong>CSU ChatGPT</strong> at <code>chat.calstate.edu</code> in another tab. If you haven't done this yet, raise your hand.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SECTION 1: GROUP REVEAL + GUIDE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="section" id="sec-guide">
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot current"></div>
+    <div class="step-dot"></div>
+    <div class="step-dot"></div>
+    <div class="step-dot"></div>
+    <span class="step-label">Your assignment</span>
+  </div>
+
+  <div id="group-banner-container"></div>
+
+  <div class="card" id="guide-content">
+    <!-- populated by JS -->
+  </div>
+
+  <div style="text-align:right; margin-top: 8px;">
+    <button class="btn btn-next" onclick="goToActivity()">Continue to Activity →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SECTION 2: ACTIVITY -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="section" id="sec-activity">
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot current"></div>
+    <div class="step-dot"></div>
+    <div class="step-dot"></div>
+    <span class="step-label">Learning activity</span>
+  </div>
+
+  <div class="card">
+    <h2>One-Way ANOVA: Within &amp; Between Group Variability</h2>
+    <p>Your goal in this activity is to develop an understanding of two key ideas in one-way ANOVA. Work through the questions below using your assigned method.</p>
+
+    <!-- Concept setup -->
+    <div class="concept-box">
+      <strong>The core question of ANOVA:</strong> When we observe differences between group means, are those differences real — or just noise? The answer depends on comparing two types of variability.
+    </div>
+
+    <hr class="divider">
+
+    <div id="activity-reminder"></div>
+
+    <!-- Questions -->
+    <div class="question-block">
+      <div class="q-num">Question 1 — Within-Group Variability</div>
+      <div class="q-text">Consider three groups of students who studied using different methods. Within each group, scores vary. In your own words: what does <em>within-group variability</em> capture? Why does it matter?</div>
+      <textarea placeholder="Write your answer here after using your assigned method..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="q-num">Question 2 — Between-Group Variability</div>
+      <div class="q-text">Now consider the three group means. One group averaged 72, another 85, another 91. What does <em>between-group variability</em> capture? How is it different from within-group variability?</div>
+      <textarea placeholder="Write your answer here after using your assigned method..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="q-num">Question 3 — The F-Ratio</div>
+      <div class="q-text">The test statistic for ANOVA is the F-ratio: <strong>F = Between / Within</strong>. Based on what you've learned, describe what it would mean if F >> 1. What about F ≈ 1? Can F be less than 0?</div>
+      <textarea placeholder="Write your answer here after using your assigned method..."></textarea>
+    </div>
+
+    <div class="question-block">
+      <div class="q-num">Question 4 — Equal Variance Condition</div>
+      <div class="q-text">For ANOVA to work correctly, we assume within-group variability is roughly equal across groups. Explain in your own words: why does this condition matter? What goes wrong if it's violated?</div>
+      <textarea placeholder="Write your answer here after using your assigned method..."></textarea>
+    </div>
+
+  </div>
+
+  <div style="text-align:right; margin-top: 8px;">
+    <button class="btn btn-next" onclick="goToSection('sec-postprompt')">I'm done with the activity →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SECTION 3: PROMPT SUBMISSION GUIDE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="section" id="sec-postprompt">
+  <div class="step-indicator">
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot done"></div>
+    <div class="step-dot current"></div>
+    <div class="step-dot"></div>
+    <span class="step-label">Submit your prompts</span>
+  </div>
+
+  <div class="card">
+    <h2>Submitting Your Conversation</h2>
+    <div id="prompt-submit-content">
+      <!-- populated by JS — control vs treatment -->
+    </div>
+  </div>
+
+  <div style="text-align:right; margin-top: 8px;">
+    <button class="btn btn-next" onclick="goToSection('sec-done')">I've submitted →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════ -->
+<!-- SECTION 4: DONE -->
+<!-- ══════════════════════════════════════════════════ -->
+<div class="section" id="sec-done">
+  <div class="card">
+    <div class="completion-check">
+      <div class="check-circle">✓</div>
+      <h2 style="margin-bottom: 12px;">You're all set!</h2>
+      <p>Thank you for participating. Your instructor will now lead a debrief — please hold any questions until then.</p>
+      <p style="margin-top: 16px; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted);">Participant code: <span id="done-code"></span></p>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ── GROUP LOOKUP TABLE ──────────────────────────────────────────────────────
+// Keys: 4-digit participant codes (as strings)
+// Values: 'control' | 'nostructure' | 'structure'
+// INSTRUCTOR: populate this before the experiment
+const GROUP_LOOKUP = {
+  // CONTROL GROUP
+  "1001": "control",
+  "1002": "control",
+  "1003": "control",
+  "1004": "control",
+  "1005": "control",
+  "1006": "control",
+  "1007": "control",
+  "1008": "control",
+  "1009": "control",
+  "1010": "control",
+
+  // NO STRUCTURE (treatment: use AI, no RTF guide)
+  "2001": "nostructure",
+  "2002": "nostructure",
+  "2003": "nostructure",
+  "2004": "nostructure",
+  "2005": "nostructure",
+  "2006": "nostructure",
+  "2007": "nostructure",
+  "2008": "nostructure",
+  "2009": "nostructure",
+  "2010": "nostructure",
+
+  // STRUCTURE (treatment: use AI with RTF guide)
+  "3001": "structure",
+  "3002": "structure",
+  "3003": "structure",
+  "3004": "structure",
+  "3005": "structure",
+  "3006": "structure",
+  "3007": "structure",
+  "3008": "structure",
+  "3009": "structure",
+  "3010": "structure",
+};
+
+// ── STATE ───────────────────────────────────────────────────────────────────
+let currentGroup = null;
+let participantCode = null;
+
+// ── SECTION NAVIGATION ──────────────────────────────────────────────────────
+function goToSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── CODE ENTRY ──────────────────────────────────────────────────────────────
+function submitCode() {
+  const raw = document.getElementById('code-input').value.trim();
+  const group = GROUP_LOOKUP[raw];
+
+  if (!group) {
+    document.getElementById('code-error').style.display = 'block';
+    return;
+  }
+
+  participantCode = raw;
+  currentGroup = group;
+  document.getElementById('done-code').textContent = raw;
+
+  ctrlSlideIdx = 0;
+  buildGuide(group);
+  buildPromptSubmit(group);
+  buildActivityReminder(group);
+  goToSection('sec-guide');
+}
+
+document.getElementById('code-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitCode();
+});
+
+function goToActivity() {
+  goToSection('sec-activity');
+}
+
+// ── GROUP BANNER ─────────────────────────────────────────────────────────────
+const GROUP_META = {
+  control:     { label: 'Your Group', name: 'Control Group',        icon: '📖', cls: 'banner-control' },
+  nostructure: { label: 'Your Group', name: 'Treatment — No Structure', icon: '🤖', cls: 'banner-nostructure' },
+  structure:   { label: 'Your Group', name: 'Treatment — Structured RTF', icon: '🧭', cls: 'banner-structure' },
+};
+
+function buildBanner(group) {
+  const m = GROUP_META[group];
+  return `<div class="group-banner ${m.cls}">
+    <div class="icon">${m.icon}</div>
+    <div>
+      <div class="group-label">${m.label}</div>
+      <div class="group-name">${m.name}</div>
+    </div>
+  </div>`;
+}
+
+// ── GUIDE CONTENT (by group) ─────────────────────────────────────────────────
+function buildGuide(group) {
+  document.getElementById('group-banner-container').innerHTML = buildBanner(group);
+
+  let html = '';
+
+  if (group === 'control') {
+    html = `
+      <h3>Your learning method: Notes &amp; Tutorial</h3>
+      <p>You are in the <strong>Control Group</strong>. You will <strong>not</strong> use AI. Work through the six slides below — they contain everything you need to answer the activity questions.</p>
+      <hr class="divider">
+
+      <div id="ctrl-slides">
+
+        <!-- ── SLIDE 1: Overview ── -->
+        <div class="ctrl-slide active" id="ctrl-s1">
+          <div class="slide-title">1 / 6 &mdash; Why Does ANOVA Compare Two Types of Variability?</div>
+          <p>Imagine a researcher tests three different study methods on student exam scores. She finds the group averages are 72, 85, and 91. But does that <em>prove</em> the methods work differently — or could random chance alone explain those differences?</p>
+          <div class="concept-box">
+            <strong>One-Way ANOVA answers:</strong> Are the differences between group means large enough — relative to the natural variation <em>within</em> groups — to count as real evidence?
+          </div>
+          <p>To answer that, ANOVA splits all the variability in the data into two buckets:</p>
+          <ul style="padding-left: 22px; line-height: 2.2; font-size: 0.95rem;">
+            <li><strong>Within-group variability</strong> — how much individuals differ <em>inside</em> the same group</li>
+            <li><strong>Between-group variability</strong> — how much the group <em>averages</em> differ from each other</li>
+          </ul>
+          <p style="margin-top:8px;">The next four slides build each idea with visuals. Slide 5 brings them together in the F-ratio. Slide 6 is a quick review before the activity.</p>
+          <div class="slide-nav">
+            <span></span>
+            <span class="slide-counter">1 / 6</span>
+            <button class="btn btn-next btn-slide" onclick="ctrlNext()">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- ── SLIDE 2: Within-Group Variability ── -->
+        <div class="ctrl-slide" id="ctrl-s2">
+          <div class="slide-title">2 / 6 &mdash; Within-Group Variability</div>
+          <div class="concept-box">
+            <strong>Within-group variability</strong> measures how spread out individual scores are <em>around their own group mean</em>. It is the <strong>noise</strong> — variation that exists even when all group members received the same treatment.
+          </div>
+          <p>The dot-plot below shows three groups (A, B, C) where scores are highly variable <em>within</em> each group. Notice the dashed lines (group means) are all bunched near the center — meaning there is little signal but a lot of noise.</p>
+
+          <div class="vis-wrap">
+            <svg viewBox="0 0 400 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+              <!-- axis -->
+              <line x1="38" y1="140" x2="390" y2="140" stroke="#ccc" stroke-width="1.5"/>
+              <text x="38" y="148" font-size="9" fill="#999" font-family="monospace">Low</text>
+              <text x="387" y="148" font-size="9" fill="#999" font-family="monospace" text-anchor="end">High</text>
+              <text x="214" y="148" font-size="9" fill="#999" font-family="monospace" text-anchor="middle">Score</text>
+              <!-- Group A row y=28 -->
+              <text x="32" y="32" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="600">A</text>
+              <circle cx="52"  cy="27" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="90"  cy="31" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="140" cy="25" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="195" cy="30" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="255" cy="26" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="310" cy="29" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="365" cy="27" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <!-- mean A ≈ x=215 -->
+              <line x1="215" y1="14" x2="215" y2="44" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- Group B row y=74 -->
+              <text x="32" y="78" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="600">B</text>
+              <circle cx="58"  cy="73" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="100" cy="69" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="148" cy="75" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="200" cy="71" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="248" cy="74" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="298" cy="70" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="355" cy="73" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <!-- mean B ≈ x=201 -->
+              <line x1="201" y1="60" x2="201" y2="90" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- Group C row y=120 -->
+              <text x="32" y="124" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="600">C</text>
+              <circle cx="48"  cy="119" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="95"  cy="123" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="150" cy="117" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="208" cy="121" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="262" cy="118" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="318" cy="122" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="370" cy="119" r="7" fill="#b5451b" opacity="0.75"/>
+              <!-- mean C ≈ x=207 -->
+              <line x1="207" y1="106" x2="207" y2="136" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- annotation: means bracket -->
+              <line x1="201" y1="8" x2="215" y2="8" stroke="#555" stroke-width="1.5"/>
+              <line x1="201" y1="5" x2="201" y2="11" stroke="#555" stroke-width="1.5"/>
+              <line x1="215" y1="5" x2="215" y2="11" stroke="#555" stroke-width="1.5"/>
+              <text x="208" y="4" font-size="9" fill="#555" font-family="monospace" text-anchor="middle">means close</text>
+            </svg>
+            <p class="vis-caption">High within-group spread &mdash; dots are far from their group mean (dashed line)</p>
+          </div>
+
+          <div class="concept-box">
+            <strong>Key idea:</strong> Large within-group variability means individuals in the same group are very different from each other. This makes it harder for ANOVA to detect real group differences — it drowns out the signal.
+          </div>
+
+          <div class="slide-nav">
+            <button class="btn btn-primary btn-slide" onclick="ctrlPrev()">&larr; Back</button>
+            <span class="slide-counter">2 / 6</span>
+            <button class="btn btn-next btn-slide" onclick="ctrlNext()">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- ── SLIDE 3: Between-Group Variability ── -->
+        <div class="ctrl-slide" id="ctrl-s3">
+          <div class="slide-title">3 / 6 &mdash; Between-Group Variability</div>
+          <div class="concept-box">
+            <strong>Between-group variability</strong> measures how far apart the <em>group means</em> are from the <strong>grand mean</strong> (the overall average of all observations). It is the <strong>signal</strong> — the evidence that groups actually differ.
+          </div>
+          <p>Here the same three groups have <em>tight</em> within-group spread but clearly <em>separated</em> means. The grand mean (gray dashed line) sits between the groups. Each group mean is far from the grand mean — strong signal.</p>
+
+          <div class="vis-wrap">
+            <svg viewBox="0 0 400 148" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+              <!-- axis -->
+              <line x1="38" y1="140" x2="390" y2="140" stroke="#ccc" stroke-width="1.5"/>
+              <text x="38" y="148" font-size="9" fill="#999" font-family="monospace">Low</text>
+              <text x="387" y="148" font-size="9" fill="#999" font-family="monospace" text-anchor="end">High</text>
+              <text x="214" y="148" font-size="9" fill="#999" font-family="monospace" text-anchor="middle">Score</text>
+              <!-- Grand mean at x=214 -->
+              <line x1="214" y1="10" x2="214" y2="138" stroke="#bbb" stroke-width="1.5" stroke-dasharray="3,4"/>
+              <text x="218" y="18" font-size="9" fill="#888" font-family="monospace">grand mean</text>
+              <!-- Group A tight cluster at x≈88 -->
+              <text x="32" y="32" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="600">A</text>
+              <circle cx="72"  cy="27" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="82"  cy="30" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="92"  cy="25" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="100" cy="29" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <circle cx="108" cy="27" r="7" fill="#2d6a4f" opacity="0.75"/>
+              <!-- mean A at x=91 -->
+              <line x1="91" y1="13" x2="91" y2="44" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- arrow: mean A → grand mean -->
+              <line x1="92" y1="8" x2="212" y2="8" stroke="#2d6a4f" stroke-width="1.2" marker-end="url(#arr)"/>
+              <text x="150" y="6" font-size="9" fill="#2d6a4f" font-family="monospace" text-anchor="middle">between</text>
+              <!-- Group B tight cluster at x≈214 -->
+              <text x="32" y="78" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="600">B</text>
+              <circle cx="196" cy="73" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="206" cy="70" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="216" cy="75" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="224" cy="71" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <circle cx="232" cy="74" r="7" fill="#1a4e8c" opacity="0.75"/>
+              <!-- mean B at x=215 — coincides with grand mean; show tiny offset -->
+              <line x1="215" y1="58" x2="215" y2="90" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- Group C tight cluster at x≈330 -->
+              <text x="32" y="124" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="600">C</text>
+              <circle cx="314" cy="119" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="324" cy="122" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="334" cy="117" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="342" cy="121" r="7" fill="#b5451b" opacity="0.75"/>
+              <circle cx="352" cy="119" r="7" fill="#b5451b" opacity="0.75"/>
+              <!-- mean C at x=333 -->
+              <line x1="333" y1="106" x2="333" y2="136" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+              <!-- arrow: grand mean → mean C -->
+              <line x1="216" y1="130" x2="331" y2="130" stroke="#b5451b" stroke-width="1.2" marker-end="url(#arr2)"/>
+              <text x="272" y="128" font-size="9" fill="#b5451b" font-family="monospace" text-anchor="middle">between</text>
+              <!-- arrowhead defs -->
+              <defs>
+                <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#2d6a4f"/>
+                </marker>
+                <marker id="arr2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="#b5451b"/>
+                </marker>
+              </defs>
+            </svg>
+            <p class="vis-caption">Low within-group spread + group means far from the grand mean = strong signal</p>
+          </div>
+
+          <div class="concept-box">
+            <strong>Key idea:</strong> Large between-group variability means the group means are far from the overall grand mean — strong evidence that groups are genuinely different. The further apart the means, the stronger the signal.
+          </div>
+
+          <div class="slide-nav">
+            <button class="btn btn-primary btn-slide" onclick="ctrlPrev()">&larr; Back</button>
+            <span class="slide-counter">3 / 6</span>
+            <button class="btn btn-next btn-slide" onclick="ctrlNext()">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- ── SLIDE 4: The F-Ratio ── -->
+        <div class="ctrl-slide" id="ctrl-s4">
+          <div class="slide-title">4 / 6 &mdash; The F-Ratio: Signal / Noise</div>
+          <div class="fratio-box">
+            <div class="f-formula">F = Between / Within</div>
+            <div class="f-sub">Mean Square Between &divide; Mean Square Within</div>
+          </div>
+          <p>The F-statistic is a ratio of the two variabilities. The two dot-plots below contrast a <strong>high-F</strong> scenario (clear group differences) with a <strong>low-F</strong> scenario (group differences lost in noise).</p>
+
+          <div class="diagram-pair">
+            <div class="vis-wrap">
+              <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                <text x="110" y="12" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">High F &mdash; Clear Signal</text>
+                <line x1="10" y1="122" x2="210" y2="122" stroke="#ccc" stroke-width="1.2"/>
+                <!-- A tight at left ~x=55 -->
+                <circle cx="44" cy="40" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="52" cy="44" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="60" cy="38" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="68" cy="42" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <line x1="57" y1="26" x2="57" y2="56" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+                <!-- B tight at center ~x=113 -->
+                <circle cx="101" cy="76" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="109" cy="72" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="117" cy="77" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="125" cy="73" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <line x1="113" y1="62" x2="113" y2="92" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+                <!-- C tight at right ~x=170 -->
+                <circle cx="157" cy="112" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="165" cy="108" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="173" cy="113" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="181" cy="109" r="6" fill="#b5451b" opacity="0.8"/>
+                <line x1="169" y1="98" x2="169" y2="122" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+              </svg>
+              <p class="vis-caption">Groups separated, tight within &rarr; F &gt;&gt; 1</p>
+            </div>
+            <div class="vis-wrap">
+              <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                <text x="110" y="12" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Low F &mdash; Noise Wins</text>
+                <line x1="10" y1="122" x2="210" y2="122" stroke="#ccc" stroke-width="1.2"/>
+                <!-- A spread across full range -->
+                <circle cx="28"  cy="40" r="6" fill="#2d6a4f" opacity="0.75"/>
+                <circle cx="62"  cy="44" r="6" fill="#2d6a4f" opacity="0.75"/>
+                <circle cx="100" cy="38" r="6" fill="#2d6a4f" opacity="0.75"/>
+                <circle cx="138" cy="42" r="6" fill="#2d6a4f" opacity="0.75"/>
+                <circle cx="180" cy="39" r="6" fill="#2d6a4f" opacity="0.75"/>
+                <line x1="102" y1="26" x2="102" y2="56" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+                <!-- B spread -->
+                <circle cx="35"  cy="76" r="6" fill="#1a4e8c" opacity="0.75"/>
+                <circle cx="72"  cy="72" r="6" fill="#1a4e8c" opacity="0.75"/>
+                <circle cx="108" cy="77" r="6" fill="#1a4e8c" opacity="0.75"/>
+                <circle cx="148" cy="73" r="6" fill="#1a4e8c" opacity="0.75"/>
+                <circle cx="190" cy="75" r="6" fill="#1a4e8c" opacity="0.75"/>
+                <line x1="111" y1="62" x2="111" y2="92" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+                <!-- C spread -->
+                <circle cx="22"  cy="112" r="6" fill="#b5451b" opacity="0.75"/>
+                <circle cx="60"  cy="108" r="6" fill="#b5451b" opacity="0.75"/>
+                <circle cx="105" cy="113" r="6" fill="#b5451b" opacity="0.75"/>
+                <circle cx="150" cy="109" r="6" fill="#b5451b" opacity="0.75"/>
+                <circle cx="192" cy="111" r="6" fill="#b5451b" opacity="0.75"/>
+                <line x1="106" y1="98" x2="106" y2="122" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+              </svg>
+              <p class="vis-caption">Groups overlap heavily, wide spread &rarr; F &asymp; 1</p>
+            </div>
+          </div>
+
+          <table class="interp-table">
+            <tr><th>F value</th><th>What it means</th></tr>
+            <tr><td><strong>F &gt;&gt; 1</strong></td><td>Between-group differences are large relative to within-group noise — strong evidence against equal means.</td></tr>
+            <tr><td><strong>F &asymp; 1</strong></td><td>Group differences are about the same size as random noise — little evidence the groups differ.</td></tr>
+            <tr><td><strong>F &lt; 0</strong></td><td>Impossible. Both numerator and denominator are <em>mean squares</em> (always &ge; 0), so F &ge; 0 always.</td></tr>
+          </table>
+
+          <div class="slide-nav">
+            <button class="btn btn-primary btn-slide" onclick="ctrlPrev()">&larr; Back</button>
+            <span class="slide-counter">4 / 6</span>
+            <button class="btn btn-next btn-slide" onclick="ctrlNext()">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- ── SLIDE 5: Equal Variance Condition ── -->
+        <div class="ctrl-slide" id="ctrl-s5">
+          <div class="slide-title">5 / 6 &mdash; The Equal Variance Condition</div>
+          <div class="concept-box">
+            ANOVA assumes that the within-group variability is <strong>roughly equal across all groups</strong>. This assumption is sometimes called <em>homoscedasticity</em> or the <strong>equal variance condition</strong>.
+          </div>
+          <p>The two panels below contrast equal variance (ANOVA works well) vs. unequal variance (ANOVA is unreliable).</p>
+
+          <div class="diagram-pair">
+            <div class="vis-wrap">
+              <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                <text x="110" y="12" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">Equal Variance &#10003;</text>
+                <line x1="10" y1="122" x2="210" y2="122" stroke="#ccc" stroke-width="1.2"/>
+                <!-- Group A -->
+                <circle cx="44" cy="40" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="52" cy="44" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="60" cy="38" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="68" cy="42" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <!-- Group B -->
+                <circle cx="100" cy="76" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="108" cy="72" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="116" cy="77" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="124" cy="73" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <!-- Group C -->
+                <circle cx="154" cy="112" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="162" cy="108" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="170" cy="113" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="178" cy="109" r="6" fill="#b5451b" opacity="0.8"/>
+                <!-- spread brackets same width -->
+                <line x1="42" y1="52" x2="70" y2="52" stroke="#2d6a4f" stroke-width="1.5"/>
+                <line x1="98" y1="88" x2="126" y2="88" stroke="#1a4e8c" stroke-width="1.5"/>
+                <line x1="152" y1="118" x2="180" y2="118" stroke="#b5451b" stroke-width="1.5"/>
+              </svg>
+              <p class="vis-caption">All groups have similar spread &mdash; condition met</p>
+            </div>
+            <div class="vis-wrap">
+              <svg viewBox="0 0 220 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                <text x="110" y="12" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Unequal Variance &#10007;</text>
+                <line x1="10" y1="122" x2="210" y2="122" stroke="#ccc" stroke-width="1.2"/>
+                <!-- Group A tight -->
+                <circle cx="48" cy="40" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="54" cy="44" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="60" cy="39" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <circle cx="66" cy="42" r="6" fill="#2d6a4f" opacity="0.8"/>
+                <!-- Group B very wide spread -->
+                <circle cx="38"  cy="75" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="72"  cy="71" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="108" cy="76" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="148" cy="72" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <circle cx="185" cy="74" r="6" fill="#1a4e8c" opacity="0.8"/>
+                <!-- Group C tight -->
+                <circle cx="152" cy="112" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="160" cy="108" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="168" cy="113" r="6" fill="#b5451b" opacity="0.8"/>
+                <circle cx="176" cy="109" r="6" fill="#b5451b" opacity="0.8"/>
+                <!-- spread brackets -->
+                <line x1="46" y1="52" x2="68" y2="52" stroke="#2d6a4f" stroke-width="1.5"/>
+                <line x1="36" y1="88" x2="187" y2="88" stroke="#1a4e8c" stroke-width="1.5"/>
+                <text x="111" y="98" font-size="9" fill="#1a4e8c" font-family="monospace" text-anchor="middle">B is much wider</text>
+                <line x1="150" y1="118" x2="178" y2="118" stroke="#b5451b" stroke-width="1.5"/>
+              </svg>
+              <p class="vis-caption">Group B is far wider &mdash; condition violated</p>
+            </div>
+          </div>
+
+          <div class="concept-box">
+            <strong>Why it matters:</strong> The within-group variance from all groups is pooled together to form the denominator of F. If one group has much larger spread, that pooled estimate is distorted, which makes the F-test unreliable — p-values become untrustworthy. Researchers check this condition by comparing group standard deviations (a rough rule: largest SD should be no more than ~2&times; the smallest).
+          </div>
+
+          <div class="slide-nav">
+            <button class="btn btn-primary btn-slide" onclick="ctrlPrev()">&larr; Back</button>
+            <span class="slide-counter">5 / 6</span>
+            <button class="btn btn-next btn-slide" onclick="ctrlNext()">Next &rarr;</button>
+          </div>
+        </div>
+
+        <!-- ── SLIDE 6: Quick Review ── -->
+        <div class="ctrl-slide" id="ctrl-s6">
+          <div class="slide-title">6 / 6 &mdash; Quick Review Before the Activity</div>
+          <p>Think through these questions before moving on. They map directly onto the four activity questions you are about to answer.</p>
+
+          <div class="check-q">
+            <div class="cq-num">Check 1</div>
+            <div class="cq-text">In your own words: what does <em>within-group variability</em> represent? Is it the signal or the noise in ANOVA?</div>
+          </div>
+          <div class="check-q">
+            <div class="cq-num">Check 2</div>
+            <div class="cq-text">Three study groups had averages of 72, 85, and 91. The grand mean is about 83. Which type of variability — within or between — does the fact that "72 is far from 83" represent?</div>
+          </div>
+          <div class="check-q">
+            <div class="cq-num">Check 3</div>
+            <div class="cq-text">If F = 8.4, what does that tell you about the signal (between-group differences) relative to the noise (within-group spread)?</div>
+          </div>
+          <div class="check-q">
+            <div class="cq-num">Check 4</div>
+            <div class="cq-text">Suppose one group's scores range from 40&ndash;100, while the other two groups range from 75&ndash;85. Why does this make ANOVA's result less trustworthy?</div>
+          </div>
+
+          <div class="note-box" style="margin-top:18px;">
+            <strong>Ready?</strong> Use your answers to these checks to complete the four activity questions on the next screen. You may return to these slides at any time using the Back button.
+          </div>
+
+          <div class="slide-nav">
+            <button class="btn btn-primary btn-slide" onclick="ctrlPrev()">&larr; Back</button>
+            <span class="slide-counter">6 / 6</span>
+            <span style="font-size:0.82rem; color: var(--control-accent); font-family:'DM Mono',monospace;">Notes complete ✓</span>
+          </div>
+        </div>
+
+      </div>`;
+
+  } else if (group === 'nostructure') {
+    html = `
+      <h3>Your learning method: Free AI Exploration</h3>
+      <p>You are in the <strong>No Structure Treatment</strong>. You will use <strong>CSU ChatGPT</strong> to learn about within-group and between-group variability in the context of one-way ANOVA.</p>
+      <hr class="divider">
+      <h3>Your learning objective</h3>
+      <div class="concept-box" style="border-left-color: var(--nostructure-accent);">
+        Use AI to help you: <strong>"Learn between-group and within-group variability in the context of one-way ANOVA."</strong><br><br>
+        You can ask any questions you want. There is no required format — just have a conversation that helps you understand these ideas.
+      </div>
+      <h3>What to do</h3>
+      <ol style="padding-left: 20px; line-height: 2.2; font-size: 0.95rem;">
+        <li>Open CSU ChatGPT in another tab (<code>chat.calstate.edu</code>)</li>
+        <li>Start a new conversation and explore using your own questions</li>
+        <li>Use the conversation to understand the concepts well enough to answer the activity questions</li>
+        <li>You may ask follow-up questions — there is no limit on how many prompts you use</li>
+      </ol>
+      <div class="note-box"><strong>Note:</strong> You will submit your full conversation at the end, so keep the tab open.</div>`;
+
+  } else if (group === 'structure') {
+    html = `
+      <h3>Your learning method: Structured AI (RTF)</h3>
+      <p>You are in the <strong>Structured Treatment</strong>. You will use <strong>CSU ChatGPT</strong> with a specific prompting technique called <strong>RTF — Role, Task, Format</strong>.</p>
+      <hr class="divider">
+      <h3>What is RTF?</h3>
+      <div class="concept-box" style="border-left-color: var(--structure-accent);">
+        <strong>Role:</strong> Tell the AI what role to play (e.g., a statistics tutor)<br>
+        <strong>Task:</strong> Describe exactly what you want it to do<br>
+        <strong>Format:</strong> Specify how you want the answer delivered
+      </div>
+      <h3>How to use RTF for this activity</h3>
+      <p>Use the template below as your <strong>starting prompt</strong>. Fill in the bracketed parts. Then continue the conversation to go deeper — keep using RTF structure on follow-up questions too.</p>
+      <div class="prompt-guide">
+        <div class="pg-label">Your RTF Prompt Template — Prompt 1</div>
+        <div class="prompt-block">Act as a <span class="fill">[patient statistics tutor / professor / expert]</span>.
+
+Teach me the difference between within-group variability and between-group variability in the context of one-way ANOVA.
+
+Explain it using <span class="fill">[a concrete example / a visual description / a real-world scenario]</span>, and define any key terms clearly.</div>
+      </div>
+      <div class="prompt-guide" style="background: #f4f0ff; border-color: #c8b8ef;">
+        <div class="pg-label" style="color: #6240b5;">Follow-Up RTF Prompt Template — Prompts 2 &amp; 3</div>
+        <div class="prompt-block" style="border-color: #d0c0f0; color: #3d2a7a;">Act as the same tutor.
+
+Now explain <span class="fill">[the F-ratio / the equal variance condition / what happens when F >> 1]</span>.
+
+Give me a <span class="fill">[short explanation / step-by-step breakdown / comparison]</span> in plain language.</div>
+      </div>
+      <h3>What to do</h3>
+      <ol style="padding-left: 20px; line-height: 2.2; font-size: 0.95rem;">
+        <li>Open CSU ChatGPT in another tab (<code>chat.calstate.edu</code>)</li>
+        <li>Use the RTF template above for your first prompt — fill in the blanks</li>
+        <li>Ask at least 2–3 follow-up prompts using the same RTF structure</li>
+        <li>Use what you learn to answer the activity questions</li>
+      </ol>
+      <div class="note-box"><strong>Note:</strong> You will submit your full conversation at the end, so keep the tab open.</div>`;
+  }
+
+  document.getElementById('guide-content').innerHTML = html;
+}
+
+// ── ACTIVITY REMINDER (shown top of activity section) ───────────────────────
+function buildActivityReminder(group) {
+  let html = '';
+  if (group === 'control') {
+    html = `<div class="note-box" style="margin-bottom: 20px;"><strong>Reminder:</strong> Use only the notes provided. Do not use AI or the internet.</div>`;
+  } else if (group === 'nostructure') {
+    html = `<div class="note-box" style="margin-bottom: 20px; background: #fdf2ee; border-color: #e8b09a; color: #7a3010;"><strong>Reminder:</strong> Use CSU ChatGPT freely — ask any questions that help you understand the concepts. Keep your conversation tab open.</div>`;
+  } else if (group === 'structure') {
+    html = `<div class="note-box" style="margin-bottom: 20px; background: #eef2fb; border-color: #a8bce8; color: #1a3a6b;"><strong>Reminder:</strong> Use RTF structure in every prompt you send to CSU ChatGPT. Keep your conversation tab open.</div>`;
+  }
+  document.getElementById('activity-reminder').innerHTML = html;
+}
+
+// ── CONTROL GROUP SLIDE NAVIGATION ──────────────────────────────────────────
+let ctrlSlideIdx = 0;
+const CTRL_SLIDES = ['ctrl-s1','ctrl-s2','ctrl-s3','ctrl-s4','ctrl-s5','ctrl-s6'];
+
+function ctrlNext() {
+  if (ctrlSlideIdx < CTRL_SLIDES.length - 1) {
+    document.getElementById(CTRL_SLIDES[ctrlSlideIdx]).classList.remove('active');
+    ctrlSlideIdx++;
+    document.getElementById(CTRL_SLIDES[ctrlSlideIdx]).classList.add('active');
+    document.getElementById('ctrl-slides').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function ctrlPrev() {
+  if (ctrlSlideIdx > 0) {
+    document.getElementById(CTRL_SLIDES[ctrlSlideIdx]).classList.remove('active');
+    ctrlSlideIdx--;
+    document.getElementById(CTRL_SLIDES[ctrlSlideIdx]).classList.add('active');
+    document.getElementById('ctrl-slides').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ── PROMPT SUBMISSION GUIDE ──────────────────────────────────────────────────
+function buildPromptSubmit(group) {
+  let html = '';
+
+  if (group === 'control') {
+    html = `
+      <p>Since you were in the <strong>Control Group</strong>, you did not use AI — so there are no prompts to submit.</p>
+      <p>You're all set! Please proceed to the Post-Test on Canvas using the link your instructor has shared.</p>
+      <div class="note-box">Open Canvas, navigate to <strong>STAT 252 → Quizzes → Post-Test: One-Way ANOVA</strong> and complete it now.</div>`;
+  } else {
+    html = `
+      <p>You're done with the activity — great work. Now submit your ChatGPT conversation so researchers can review how different prompting techniques affected learning.</p>
+      <hr class="divider">
+      <h3>Step 1 — Copy your conversation</h3>
+      <ol style="padding-left: 20px; line-height: 2.2; font-size: 0.95rem;">
+        <li>Go to your CSU ChatGPT tab</li>
+        <li>Click the <strong>Share</strong> button (or select all text with Ctrl+A / Cmd+A)</li>
+        <li>Copy the entire conversation</li>
+      </ol>
+      <h3 style="margin-top: 20px;">Step 2 — Submit via Microsoft Forms</h3>
+      <ol style="padding-left: 20px; line-height: 2.2; font-size: 0.95rem;">
+        <li>Open the link your instructor has posted in Canvas</li>
+        <li>Enter your <strong>4-digit participant code: <code>${participantCode}</code></strong></li>
+        <li>Paste your conversation into the text box</li>
+        <li>Submit the form</li>
+      </ol>
+      <div class="note-box"><strong>After submitting:</strong> Open Canvas and complete the <strong>Post-Test: One-Way ANOVA</strong> quiz.</div>`;
+  }
+
+  document.getElementById('prompt-submit-content').innerHTML = html;
+}
+</script>
+</body>
+</html>
