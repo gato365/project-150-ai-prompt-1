@@ -1,0 +1,101 @@
+{
+  "quiz_metadata": {
+    "title": "One-Way ANOVA Pre-Test",
+    "description": "Answer the following questions based on your current understanding. You are not expected to have prior knowledge of One-Way ANOVA. Answer to the best of your ability.",
+    "time_limit_minutes": 15,
+    "allowed_attempts": 1,
+    "calculator_allowed": false,
+    "quiz_type": "assignment",
+    "shuffle_answers": false
+  },
+  "shared_stimulus": {
+    "applies_to_questions": [1, 2, 3, 4, 5, 6],
+    "text": "A researcher is studying whether three different study environments — a quiet library, a coffee shop, and a shared dorm room — affect student performance on a 50-point statistics quiz. Forty-five students are randomly assigned to one of the three environments, with 15 students in each group. After the quiz, the group averages are: Library = 38.2 (SD = 4.1), Coffee Shop = 34.7 (SD = 3.9), Dorm Room = 31.5 (SD = 4.4)."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice_question",
+      "title": "Identifying Within-Group Variability",
+      "question_text": "Which of the following best represents within-group variability in this study?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The difference between the Library mean (38.2) and the Dorm Room mean (31.5)", "weight": 0 },
+        { "id": "B", "text": "The spread of individual quiz scores among students studying in the Coffee Shop", "weight": 100 },
+        { "id": "C", "text": "The overall average score across all 45 students", "weight": 0 },
+        { "id": "D", "text": "The difference between the highest and lowest group means", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice_question",
+      "title": "Identifying Between-Group Variability",
+      "question_text": "Which of the following best represents between-group variability in this study?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The standard deviation within the Library group (SD = 4.1)", "weight": 0 },
+        { "id": "B", "text": "The range of scores among all 45 individual students", "weight": 0 },
+        { "id": "C", "text": "The differences among the three group means (38.2, 34.7, and 31.5)", "weight": 100 },
+        { "id": "D", "text": "The average standard deviation across the three groups", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice_question",
+      "title": "F-Statistic Structure",
+      "question_text": "In a One-Way ANOVA, the F-statistic is calculated as:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Within-group variability ÷ Between-group variability", "weight": 0 },
+        { "id": "B", "text": "Between-group variability ÷ Within-group variability", "weight": 100 },
+        { "id": "C", "text": "Sample mean ÷ Standard deviation", "weight": 0 },
+        { "id": "D", "text": "Total variability ÷ Number of groups", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice_question",
+      "title": "Reasoning About a Small F",
+      "question_text": "Suppose the three study environment groups all had very similar quiz averages (35.1, 35.4, 35.2), but students within each group still had widely different scores. What would you expect the F-statistic to look like?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Large, because there is a lot of total variability", "weight": 0 },
+        { "id": "B", "text": "Large, because within-group variability is high", "weight": 0 },
+        { "id": "C", "text": "Small, because between-group variability is low relative to within-group variability", "weight": 100 },
+        { "id": "D", "text": "Equal to 1, because the means are approximately the same", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice_question",
+      "title": "Interpreting a Small F",
+      "question_text": "A researcher runs a One-Way ANOVA and gets a small F-statistic. Which is the most likely explanation?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The group means are very different from each other", "weight": 0 },
+        { "id": "B", "text": "The observations within each group are tightly clustered around their group mean", "weight": 0 },
+        { "id": "C", "text": "The between-group differences are large compared to the within-group spread", "weight": 0 },
+        { "id": "D", "text": "The within-group variability is large relative to the differences between group means", "weight": 100 }
+      ],
+      "correct_answer_id": "D"
+    },
+    {
+      "id": 6,
+      "type": "multiple_choice_question",
+      "title": "Role of Within-Group Variability",
+      "question_text": "Why does within-group variability matter when evaluating whether differences between group means are meaningful?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "It determines how many groups can be compared in a single ANOVA", "weight": 0 },
+        { "id": "B", "text": "Large within-group variability makes it harder to detect real differences between group means, because individual variation obscures the signal", "weight": 100 },
+        { "id": "C", "text": "Within-group variability inflates the between-group differences, making the F-statistic appear larger", "weight": 0 },
+        { "id": "D", "text": "It has no effect on the F-statistic — only the group means matter", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    }
+  ]
+}

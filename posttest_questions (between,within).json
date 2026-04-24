@@ -1,0 +1,231 @@
+{
+  "quiz_metadata": {
+    "title": "One-Way ANOVA Post-Test",
+    "description": "Answer the following questions based on your current understanding. Answer to the best of your ability.",
+    "time_limit_minutes": 15,
+    "allowed_attempts": 1,
+    "calculator_allowed": false,
+    "quiz_type": "assignment",
+    "shuffle_answers": false
+  },
+  "shared_stimulus": {
+    "applies_to_questions": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+    "text": "An organizational psychologist is studying whether three different onboarding programs affect new employee productivity scores (measured on a 100-point scale) after 90 days. She randomly assigns 60 new hires to one of three programs — Standard Onboarding (n = 20), Mentorship-Based Onboarding (n = 20), and Self-Directed Onboarding (n = 20). Results: Standard M = 71.4 (SD = 6.2), Mentorship M = 80.1 (SD = 6.8), Self-Directed M = 68.9 (SD = 12.5). A One-Way ANOVA produces F(2, 57) = 9.84, p = 0.0002."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice_question",
+      "title": "Between-Group Variability — Definition",
+      "question_text": "In this study, between-group variability refers to:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The spread of productivity scores among employees within the Standard Onboarding group", "weight": 0 },
+        { "id": "B", "text": "How much the three group means (71.4, 80.1, 68.9) differ from the overall mean", "weight": 100 },
+        { "id": "C", "text": "The total variability in productivity scores across all 60 employees", "weight": 0 },
+        { "id": "D", "text": "The difference between the largest and smallest individual scores in the dataset", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice_question",
+      "title": "Within-Group Variability — Definition",
+      "question_text": "Which of the following is the best example of within-group variability in this study?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The gap between the Mentorship mean (80.1) and the Self-Directed mean (68.9)", "weight": 0 },
+        { "id": "B", "text": "The difference between the highest and lowest group averages", "weight": 0 },
+        { "id": "C", "text": "The variability in productivity scores among the 20 employees in the Self-Directed group", "weight": 100 },
+        { "id": "D", "text": "The F-statistic of 9.84", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice_question",
+      "title": "Interpreting the F-Statistic Value",
+      "question_text": "The F-statistic of 9.84 tells us that:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Between-group variability is about 9.84 times larger than within-group variability", "weight": 100 },
+        { "id": "B", "text": "Within-group variability is about 9.84 times larger than between-group variability", "weight": 0 },
+        { "id": "C", "text": "There are 9.84 units of difference between each pair of group means", "weight": 0 },
+        { "id": "D", "text": "The p-value is 9.84 times smaller than 0.10", "weight": 0 }
+      ],
+      "correct_answer_id": "A"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice_question",
+      "title": "Unequal Variance Concern",
+      "question_text": "The Self-Directed group has SD = 12.5, while the other two groups have SD = 6.2 and 6.8. What concern does this raise?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The group means are too similar for ANOVA to be meaningful", "weight": 0 },
+        { "id": "B", "text": "The Self-Directed group may be violating the equal variance assumption", "weight": 100 },
+        { "id": "C", "text": "The sample sizes are too small to compute an F-statistic", "weight": 0 },
+        { "id": "D", "text": "The between-group variability is artificially inflated", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice_question",
+      "title": "Effect of Reducing Within-Group Variability",
+      "question_text": "Suppose the same group means (71.4, 80.1, 68.9) were observed but all three groups now had SD = 2.0. What would happen to the F-statistic?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "It would decrease, because the group means are more compressed", "weight": 0 },
+        { "id": "B", "text": "It would stay the same, because the means did not change", "weight": 0 },
+        { "id": "C", "text": "It would increase, because within-group variability decreased", "weight": 100 },
+        { "id": "D", "text": "It would become negative, because the standard deviations are now equal", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 6,
+      "type": "multiple_choice_question",
+      "title": "Effect of Reducing Between-Group Variability",
+      "question_text": "Now suppose the group means were much closer together — Standard = 72.1, Mentorship = 73.0, Self-Directed = 71.8 — with standard deviations unchanged. What would happen to the F-statistic?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "It would increase, because there are still three groups", "weight": 0 },
+        { "id": "B", "text": "It would decrease, because between-group variability is now smaller", "weight": 100 },
+        { "id": "C", "text": "It would stay the same, because within-group variability did not change", "weight": 0 },
+        { "id": "D", "text": "It would double, because the number of comparisons stays fixed at 3", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 7,
+      "type": "multiple_choice_question",
+      "title": "Signal vs. Noise",
+      "question_text": "In the context of One-Way ANOVA, within-group variability is best described as:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The \"signal\" — it represents meaningful differences caused by the treatment", "weight": 0 },
+        { "id": "B", "text": "The \"noise\" — it represents background variation that makes it harder to detect real differences", "weight": 100 },
+        { "id": "C", "text": "The denominator of the p-value calculation", "weight": 0 },
+        { "id": "D", "text": "A measure of how different the group sample sizes are from each other", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 8,
+      "type": "multiple_choice_question",
+      "title": "Degrees of Freedom",
+      "question_text": "In F(2, 57), the \"2\" represents:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The within-group degrees of freedom, based on sample sizes within each group", "weight": 0 },
+        { "id": "B", "text": "The between-group degrees of freedom, equal to the number of groups minus one", "weight": 100 },
+        { "id": "C", "text": "The total number of groups in the study", "weight": 0 },
+        { "id": "D", "text": "The number of pairwise comparisons being made", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 9,
+      "type": "multiple_choice_question",
+      "title": "Conclusion from p-value",
+      "question_text": "The ANOVA produces p = 0.0002. At a significance level of 0.10, what is the correct conclusion?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Fail to reject H₀; there is no evidence that any group means differ", "weight": 0 },
+        { "id": "B", "text": "Reject H₀; there is significant evidence that at least one group mean differs from the others", "weight": 100 },
+        { "id": "C", "text": "Reject H₀; all three group means are significantly different from each other", "weight": 0 },
+        { "id": "D", "text": "Accept H₀; the between-group variability is too small to matter", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 10,
+      "type": "multiple_answers_question",
+      "title": "Conditions for a Large F-Statistic",
+      "question_text": "Which of the following conditions would tend to produce a large F-statistic? Select all that apply.",
+      "points_possible": 2,
+      "answers": [
+        { "id": "A", "text": "Group means are spread far apart from each other", "weight": 100 },
+        { "id": "B", "text": "Within-group variability is small relative to between-group differences", "weight": 100 },
+        { "id": "C", "text": "All group means are approximately equal to the overall mean", "weight": 0 },
+        { "id": "D", "text": "The standard deviations within groups are very large", "weight": 0 },
+        { "id": "E", "text": "Sample sizes are large enough to reduce within-group error estimates", "weight": 100 }
+      ],
+      "correct_answer_ids": ["A", "B", "E"],
+      "grading_note": "Full credit for selecting A, B, and E only. Partial credit at professor's discretion."
+    },
+    {
+      "id": 11,
+      "type": "multiple_choice_question",
+      "title": "Interpreting a Non-Significant Result",
+      "question_text": "A different researcher gets F(2, 57) = 0.61, p = 0.55. What is the most accurate interpretation?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "The group means are proven to be identical", "weight": 0 },
+        { "id": "B", "text": "The between-group variability is large relative to within-group variability", "weight": 0 },
+        { "id": "C", "text": "The within-group variability is large enough that the observed mean differences are not statistically convincing", "weight": 100 },
+        { "id": "D", "text": "There is a mistake in the analysis because F cannot be less than 1", "weight": 0 }
+      ],
+      "correct_answer_id": "C"
+    },
+    {
+      "id": 12,
+      "type": "multiple_choice_question",
+      "title": "Total Variability Decomposition",
+      "question_text": "In a One-Way ANOVA, total variability in the data is decomposed into:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Variability due to sampling error and variability due to measurement error", "weight": 0 },
+        { "id": "B", "text": "Between-group variability and within-group variability", "weight": 100 },
+        { "id": "C", "text": "Variability in the means and variability in the standard deviations", "weight": 0 },
+        { "id": "D", "text": "Explained variability and unexplained variability in a regression sense only", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 13,
+      "type": "multiple_choice_question",
+      "title": "Impact of High SD in One Group",
+      "question_text": "The Self-Directed group's large SD (12.5) compared to the other groups primarily affects the ANOVA by:",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "Inflating between-group variability, making the F-statistic appear larger than it should", "weight": 0 },
+        { "id": "B", "text": "Inflating within-group variability, which reduces the F-statistic and makes it harder to detect real group differences", "weight": 100 },
+        { "id": "C", "text": "Having no effect because only means are used in the F-statistic calculation", "weight": 0 },
+        { "id": "D", "text": "Causing the Mentorship group mean to appear artificially high by comparison", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    },
+    {
+      "id": 14,
+      "type": "multiple_answers_question",
+      "title": "What a Large F-Statistic Tells Us",
+      "question_text": "Which of the following statements are true when a One-Way ANOVA produces a large F-statistic? Select all that apply.",
+      "points_possible": 2,
+      "answers": [
+        { "id": "A", "text": "Between-group variability is large relative to within-group variability", "weight": 100 },
+        { "id": "B", "text": "The observed differences among group means are unlikely to be due to chance alone", "weight": 100 },
+        { "id": "C", "text": "All individual group means are proven to be significantly different from each other", "weight": 0 },
+        { "id": "D", "text": "The null hypothesis should be rejected if the p-value is below the significance level", "weight": 100 },
+        { "id": "E", "text": "Within-group variability is larger than between-group variability", "weight": 0 }
+      ],
+      "correct_answer_ids": ["A", "B", "D"],
+      "grading_note": "Full credit for selecting A, B, and D only. Partial credit at professor's discretion."
+    },
+    {
+      "id": 15,
+      "type": "multiple_choice_question",
+      "title": "Synthesis — Interpreting the Full Result",
+      "question_text": "Based on F(2, 57) = 9.84 and p = 0.0002, which of the following is the most complete and accurate conclusion?",
+      "points_possible": 1,
+      "answers": [
+        { "id": "A", "text": "We reject H₀; all three onboarding programs are proven to differ from each other, and no further testing is needed since the F-statistic already identifies which groups differ", "weight": 0 },
+        { "id": "B", "text": "We reject H₀; the large F-statistic indicates between-group variability greatly exceeds within-group variability, suggesting at least one onboarding program produces meaningfully different productivity outcomes, and a post-hoc test should be used to identify which programs differ", "weight": 100 },
+        { "id": "C", "text": "We fail to reject H₀; although the F-statistic is large, the p-value of 0.0002 is too extreme to be considered reliable evidence under standard testing conditions", "weight": 0 },
+        { "id": "D", "text": "We reject H₀; the result confirms that Mentorship Onboarding causes higher productivity than the other two programs, since it has the highest group mean and the between-group variability exceeds within-group variability", "weight": 0 }
+      ],
+      "correct_answer_id": "B"
+    }
+  ]
+}
