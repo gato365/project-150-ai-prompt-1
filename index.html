@@ -665,7 +665,7 @@ const GROUP_LOOKUP = {
 };
 const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxd292jDfcAOVsJet0T2Uq-516HsnuHnCmBRBllVFDRsWfqs760N_4DFhaZuW1-zy9_/exec";
 const MS_FORMS_URL = "https://forms.cloud.microsoft/r/PYiH8kKjCV";
-const SESSION_DURATION = 15 * 3; // 15 minutes in seconds
+const SESSION_DURATION = 15 * 2; // 15 minutes in seconds
 
 // ═══════════════════════════════════════════════════════
 // STATE
@@ -1024,12 +1024,52 @@ function buildSubmit(){
   const tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
   const pct=Math.round((tot/4)*100);
   document.getElementById('dscore').textContent=`${tot}/4`;
+
+  const qMeta=[
+    {id:'q1',label:'Q1',type:'mc'},
+    {id:'q2',label:'Q2',type:'mc'},
+    {id:'q3',label:'Q3',type:'ma'},
+    {id:'q4',label:'Q4',type:'ma'},
+  ];
+  const thStyle='text-align:left;font-family:\'DM Mono\',monospace;font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 14px 6px 0;border-bottom:1.5px solid var(--border);';
+  const tdStyle='padding:9px 14px 9px 0;border-bottom:1px solid var(--border);font-size:.85rem;vertical-align:middle;';
+  let rows='';
+  qMeta.forEach(({id,label,type})=>{
+    const chosen = type==='mc'
+      ? (mcSel[id]||'—')
+      : ([...maSel[id]].sort().join(', ')||'—');
+    const correct=CORRECT[id].join(', ');
+    const score=sc[id];
+    let statusColor,statusTxt;
+    if(score===1){statusColor='var(--ok)';statusTxt='✓ Correct';}
+    else if(score===0.5){statusColor='var(--pt)';statusTxt='~ Partial';}
+    else{statusColor='var(--no)';statusTxt='✗ Incorrect';}
+    rows+=`<tr>
+      <td style="${tdStyle}font-family:'DM Mono',monospace;color:var(--muted);font-size:.8rem;">${label}</td>
+      <td style="${tdStyle}font-family:'DM Mono',monospace;font-weight:600;">${chosen}</td>
+      <td style="${tdStyle}font-family:'DM Mono',monospace;color:var(--muted);font-size:.8rem;">${correct}</td>
+      <td style="${tdStyle}font-family:'DM Mono',monospace;color:${statusColor};font-weight:600;font-size:.8rem;">${statusTxt}</td>
+    </tr>`;
+  });
+
   document.getElementById('scorediv').innerHTML=`
     <div class="score-sum">
       <div class="score-lbl">YOUR SCORE</div>
       <div class="score-big">${tot}<span style="font-size:1.4rem;opacity:.55">/4</span></div>
       <div class="sbar-wrap"><div class="sbar" id="sbarfill" style="width:0"></div></div>
       <div class="score-lbl">${pct}%</div>
+    </div>
+    <div class="card" style="padding:20px 26px;margin-bottom:18px;">
+      <div class="lbl" style="margin-bottom:12px;">Your Selections</div>
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr>
+          <th style="${thStyle}">Question</th>
+          <th style="${thStyle}">You Chose</th>
+          <th style="${thStyle}">Correct Answer</th>
+          <th style="${thStyle}">Result</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
     </div>`;
   setTimeout(()=>{const b=document.getElementById('sbarfill');if(b)b.style.width=pct+'%';},120);
 
@@ -1073,7 +1113,10 @@ async function submitGS(){
   const payload={
     timestamp:new Date().toISOString(),
     studentNum, code, group:grp,
-    q1:sc.q1, q2:sc.q2, q3:sc.q3, q4:sc.q4,
+    q1:sc.q1, q1_sel:mcSel.q1||'',
+    q2:sc.q2, q2_sel:mcSel.q2||'',
+    q3:sc.q3, q3_sel:[...maSel.q3].sort().join(','),
+    q4:sc.q4, q4_sel:[...maSel.q4].sort().join(','),
     total:Object.values(sc).reduce((a,b)=>a+(b||0),0),
     conversation:grp==='control'?'':chat
   };
@@ -1100,10 +1143,10 @@ function doPost(e) {
   const ss = SpreadsheetApp.openById("YOUR_SPREADSHEET_ID");
   const sheet = ss.getSheetByName("Responses") || ss.insertSheet("Responses");
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(["Timestamp","StudentNumber","Code","Group","Q1","Q2","Q3","Q4","Total","Conversation"]);
+    sheet.appendRow(["Timestamp","StudentNumber","Code","Group","Q1","Q1_Selected","Q2","Q2_Selected","Q3","Q3_Selected","Q4","Q4_Selected","Total","Conversation"]);
   }
   const d = JSON.parse(e.postData.contents);
-  sheet.appendRow([d.timestamp,d.studentNum,d.code,d.group,d.q1,d.q2,d.q3,d.q4,d.total,d.conversation]);
+  sheet.appendRow([d.timestamp,d.studentNum,d.code,d.group,d.q1,d.q1_sel,d.q2,d.q2_sel,d.q3,d.q3_sel,d.q4,d.q4_sel,d.total,d.conversation]);
   return ContentService.createTextOutput("OK");
 }
 ═══════════════════════════════════════════════════════ -->
