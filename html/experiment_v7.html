@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT 252 — One-Way ANOVA Activity</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --green:#154734; --gold:#C69214; --gold-light:#e8b84b;
+    --cream:#faf8f3; --ink:#1a1a1a; --muted:#6b6b6b; --border:#ddd8cc; --surface:#fff;
+    --ok:#1a6b3a; --ok-bg:#eaf7ee; --ok-bd:#7ec8a4;
+    --no:#b5451b; --no-bg:#fdf2ee; --no-bd:#e8b09a;
+    --pt:#7a5c00; --pt-bg:#fffbea; --pt-bd:#f0d87a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
+
+  /* header */
+  header{background:var(--green);color:white;padding:20px 36px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--gold);position:sticky;top:0;z-index:50}
+  .hbadge{width:44px;height:44px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:19px;color:var(--green);font-weight:bold;flex-shrink:0}
+  header h1{font-family:'DM Serif Display',serif;font-size:1.3rem;font-weight:400}
+  header p{font-size:0.7rem;opacity:0.6;margin-top:2px;font-family:'DM Mono',monospace;letter-spacing:0.04em}
+  .prog-track{height:3px;background:rgba(255,255,255,.18)}
+  .prog-fill{height:3px;background:var(--gold);transition:width .4s ease;width:0}
+
+  /* layout */
+  main{max-width:800px;margin:0 auto;padding:40px 22px 80px}
+  .section{display:none;animation:fu .35s ease}
+  .section.active{display:block}
+  @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:30px 34px;margin-bottom:18px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+
+  /* type */
+  h2{font-family:'DM Serif Display',serif;font-size:1.65rem;font-weight:400;color:var(--green);margin-bottom:8px;line-height:1.2}
+  h3{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;color:var(--ink);margin-bottom:10px}
+  p{line-height:1.72;color:#333;margin-bottom:10px;font-size:.93rem}
+  p:last-child{margin-bottom:0}
+  .lbl{font-family:'DM Mono',monospace;font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+
+  /* entry */
+  .input-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:18px}
+  input[type=text]{font-family:'DM Mono',monospace;font-size:1.45rem;letter-spacing:.25em;border:2px solid var(--border);border-radius:8px;padding:12px 16px;width:160px;text-align:center;background:var(--cream);color:var(--ink);outline:none;transition:border-color .2s}
+  input[type=text]:focus{border-color:var(--green)}
+  .err{display:none;margin-top:11px;padding:9px 15px;background:#fff0ee;border:1px solid #f5c6c0;border-radius:6px;font-size:.83rem;color:#c0392b;font-family:'DM Mono',monospace}
+
+  /* buttons */
+  .btn{font-family:'DM Sans',sans-serif;font-size:.87rem;font-weight:600;padding:12px 24px;border:none;border-radius:8px;cursor:pointer;transition:all .15s;letter-spacing:.02em}
+  .btn-green{background:var(--green);color:white}
+  .btn-green:hover{background:#1c5c42;transform:translateY(-1px);box-shadow:0 4px 12px rgba(21,71,52,.25)}
+  .btn-gold{background:var(--gold);color:var(--green)}
+  .btn-gold:hover{background:var(--gold-light);transform:translateY(-1px)}
+  .btn-sm{font-size:.8rem;padding:9px 17px}
+  .btn-full{width:100%;padding:15px;font-size:.97rem;margin-top:14px;border-radius:10px}
+  .btn-full:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* steps */
+  .sdots{display:flex;gap:7px;margin-bottom:26px;align-items:center}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .3s}
+  .dot.done{background:var(--green)}
+  .dot.now{background:var(--gold);width:22px;border-radius:4px}
+  .slbl{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--muted);margin-left:5px}
+
+  /* concept/note boxes */
+  .cbox{background:var(--cream);border-left:3px solid var(--gold);padding:13px 17px;border-radius:0 8px 8px 0;margin:13px 0;font-size:.89rem;line-height:1.65}
+  .cbox strong{color:var(--green)}
+  .nbox{background:#fffbea;border:1.5px solid #f0d87a;border-radius:8px;padding:12px 16px;font-size:.83rem;line-height:1.6;color:#7a5c00;margin:13px 0}
+  .nbox strong{color:#5a4000}
+  .divider{border:none;border-top:1.5px solid var(--border);margin:22px 0}
+
+  /* teaching slides */
+  .tslide{display:none;animation:fu .3s ease}
+  .tslide.active{display:block}
+  .stitle{font-family:'DM Serif Display',serif;font-size:1.08rem;color:var(--green);margin-bottom:12px;padding-bottom:9px;border-bottom:2px solid var(--border)}
+  .snav{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:13px;border-top:1.5px solid var(--border)}
+  .sctr{font-family:'DM Mono',monospace;font-size:.69rem;color:var(--muted)}
+
+  /* visualization */
+  .vwrap{background:var(--cream);border:1.5px solid var(--border);border-radius:10px;padding:12px 10px 7px;margin:13px 0;overflow:hidden}
+  .vwrap svg{width:100%;height:auto;display:block}
+  .vcap{text-align:center;font-family:'DM Mono',monospace;font-size:.63rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-top:5px}
+  .dpair{display:flex;gap:12px;margin:13px 0;flex-wrap:wrap}
+  .dpair .vwrap{flex:1;min-width:195px}
+
+  /* F box */
+  .fbox{background:var(--green);color:white;border-radius:10px;padding:14px 20px;text-align:center;margin:13px 0}
+  .fform{font-family:'DM Serif Display',serif;font-size:1.75rem;letter-spacing:.04em;margin-bottom:3px}
+  .fsub{font-size:.73rem;opacity:.8;font-family:'DM Mono',monospace}
+  .itable{width:100%;border-collapse:collapse;font-size:.85rem;margin:11px 0}
+  .itable th{background:#edf7f2;color:var(--green);padding:8px 12px;text-align:left;font-family:'DM Mono',monospace;font-size:.69rem;letter-spacing:.06em;border-bottom:2px solid var(--ok-bd)}
+  .itable td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55}
+  .itable tr:last-child td{border-bottom:none}
+
+  /* method card */
+  .mcard{border-radius:10px;padding:18px 22px;margin:16px 0;border:1.5px solid var(--border);background:#f4f8ff}
+  .mcard h3{color:var(--green);margin-bottom:9px}
+  .pguide{background:#eef2ff;border:1.5px solid #c0ceef;border-radius:10px;padding:18px 22px;margin:13px 0}
+  .pglbl{font-family:'DM Mono',monospace;font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:#5c6bc0;margin-bottom:7px}
+  .pblock{font-family:'DM Mono',monospace;font-size:.79rem;background:white;border:1px solid #d0d8ef;border-radius:6px;padding:12px 14px;line-height:1.7;color:#2c3e6b;margin:6px 0;white-space:pre-wrap}
+  .pblock .fill{color:var(--no);font-style:italic}
+  ol.steps{padding-left:19px;line-height:2.2;font-size:.91rem}
+
+  /* questions */
+  .qblock{border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:16px;background:var(--surface)}
+  .qnum{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+  .qtext{font-size:.93rem;line-height:1.65;color:var(--ink);margin-bottom:13px}
+  .qscen{background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:11px 15px;font-size:.86rem;line-height:1.65;margin-bottom:13px;color:#444}
+  .opts{display:flex;flex-direction:column;gap:8px}
+
+  /* MC option button */
+  .obt{display:flex;align-items:flex-start;gap:11px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;font-size:.86rem;line-height:1.5;color:var(--ink);transition:all .15s;width:100%}
+  .obt:hover:not(:disabled){border-color:var(--green);background:#f0f7f3}
+  .obt:disabled{cursor:default}
+  .olt{font-family:'DM Mono',monospace;font-size:.76rem;font-weight:500;color:var(--muted);flex-shrink:0;margin-top:1px;min-width:16px}
+  .obt.ok{background:var(--ok-bg);border-color:var(--ok-bd)}
+  .obt.ok .olt{color:var(--ok)}
+  .obt.no{background:var(--no-bg);border-color:var(--no-bd)}
+  .obt.no .olt{color:var(--no)}
+  .obt.show-ok{background:var(--ok-bg);border-color:var(--ok-bd);border-width:2px}
+  .obt.sel-mc{border-color:var(--green);background:#edf7f2;border-width:2px}
+
+  /* MA option */
+  .maopt{display:flex;align-items:flex-start;gap:11px;background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.86rem;line-height:1.5;color:var(--ink);transition:all .15s;user-select:none}
+  .maopt:hover{border-color:var(--green);background:#f0f7f3}
+  .maopt.sel{border-color:var(--green);background:#edf7f2}
+  .maopt.ok{background:var(--ok-bg);border-color:var(--ok-bd)}
+  .maopt.no{background:var(--no-bg);border-color:var(--no-bd)}
+  .maopt.show-ok{background:var(--ok-bg);border-color:var(--ok-bd);border-width:2px}
+  .mchk{width:17px;height:17px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;color:white;background:white;margin-top:1px;transition:all .15s}
+  .maopt.sel .mchk{background:var(--green);border-color:var(--green)}
+  .sub-ma{margin-top:9px;font-size:.8rem;padding:8px 16px}
+
+  /* feedback */
+  .fb{display:none;margin-top:11px;border-radius:8px;padding:12px 15px;font-size:.86rem;line-height:1.6}
+  .fb.ok{display:block;background:var(--ok-bg);border:1.5px solid var(--ok-bd);color:var(--ok)}
+  .fb.no{display:block;background:var(--no-bg);border:1.5px solid var(--no-bd);color:var(--no)}
+  .fb.pt{display:block;background:var(--pt-bg);border:1.5px solid var(--pt-bd);color:var(--pt)}
+  .expls{margin-top:9px;font-size:.81rem}
+  .erow{display:flex;gap:7px;margin-bottom:4px;align-items:flex-start}
+  .elt{font-family:'DM Mono',monospace;font-weight:500;flex-shrink:0}
+  .elt.r{color:var(--ok)} .elt.w{color:var(--no)}
+
+  /* score */
+  .score-sum{background:var(--green);color:white;border-radius:12px;padding:22px 26px;text-align:center;margin-bottom:18px}
+  .score-big{font-family:'DM Serif Display',serif;font-size:3.4rem;line-height:1;margin-bottom:3px}
+  .score-lbl{font-family:'DM Mono',monospace;font-size:.73rem;opacity:.7;letter-spacing:.08em}
+  .sbar-wrap{background:rgba(255,255,255,.2);border-radius:6px;height:7px;margin:11px 0 3px;overflow:hidden}
+  .sbar{background:var(--gold);border-radius:6px;height:100%;transition:width 1s ease}
+
+  /* submission */
+  .ccheck{width:68px;height:68px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.7rem;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+  /* ── TIMER ── */
+  .timer-wrap{background:var(--green);color:white;border-radius:14px;padding:26px 24px;margin-bottom:18px;text-align:center}
+  .timer-lbl{font-family:'DM Mono',monospace;font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-bottom:8px}
+  .timer-display{font-family:'DM Mono',monospace;font-size:3.6rem;font-weight:500;letter-spacing:.06em;line-height:1;margin-bottom:4px}
+  .timer-display.urgent{color:var(--gold)}
+  .timer-sub{font-size:.78rem;opacity:.65;font-family:'DM Mono',monospace;margin-bottom:12px}
+  .timer-bar-wrap{background:rgba(255,255,255,.2);border-radius:6px;height:5px;margin:12px 0 8px;overflow:hidden}
+  .timer-bar{background:var(--gold);border-radius:6px;height:100%;transition:width 1s linear;width:100%}
+  .timer-controls{display:flex;gap:8px;justify-content:center}
+  .tbtn{font-family:'DM Mono',monospace;font-size:.75rem;padding:7px 16px;border:1.5px solid rgba(255,255,255,.35);background:transparent;color:white;border-radius:6px;cursor:pointer;transition:all .15s}
+  .tbtn:hover{background:rgba(255,255,255,.15)}
+  /* ── AI LINK ── */
+  .ai-link{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:white;padding:10px 20px;border-radius:8px;font-weight:600;font-size:.87rem;text-decoration:none;font-family:'DM Sans',sans-serif;letter-spacing:.02em;margin-top:8px;transition:all .15s}
+  .ai-link:hover{background:#1c5c42;transform:translateY(-1px)}
+  .msforms-link{display:inline-flex;align-items:center;gap:6px;background:#0078d4;color:white;padding:10px 20px;border-radius:8px;font-weight:600;font-size:.87rem;text-decoration:none;font-family:'DM Sans',sans-serif;letter-spacing:.02em;margin-top:8px;transition:all .15s}
+  .msforms-link:hover{background:#005a9e;transform:translateY(-1px)}
+
+  .spin{display:none;width:19px;height:19px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:rot .7s linear infinite;margin:0 auto}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  @media(max-width:600px){
+    header{padding:14px 18px} main{padding:24px 12px 60px} .card{padding:20px 16px}
+    input[type=text]{font-size:1.2rem;width:138px} .dpair{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hbadge">Σ</div>
+  <div>
+    <h1>STAT 252 — One-Way ANOVA Activity</h1>
+    
+    <p style="color:white;">Spring 2026 · Cal Poly SLO · Within &amp; Between Group Variability</p>
+  </div>
+</header>
+<div class="prog-track"><div class="prog-fill" id="pfill"></div></div>
+
+<main>
+
+<!-- ════════════════════════════════════ SEC 0: ENTRY ════ -->
+<div class="section active" id="s0">
+  <div class="card">
+    <div class="lbl">Step 1 of 5</div>
+    <h2>Welcome to today's activity</h2>
+    <p>Enter your student number and the 4-digit participant code your instructor gave you. Both are required to begin.</p>
+    <div class="input-row" style="flex-wrap:wrap;gap:14px;align-items:flex-end;">
+      <div>
+        <div class="lbl">Student number</div>
+        
+        <input type="text" id="snum" maxlength="7" placeholder="00" autocomplete="off" style="width:150px;font-size:1.1rem;letter-spacing:.08em;"/>
+      </div>
+      <div>
+        <div class="lbl">Participant code</div>
+        <input type="text" id="ci" maxlength="4" placeholder="0000" autocomplete="off" style="width:150px;font-size:1.1rem;letter-spacing:.08em;"/>
+      </div>
+      <button class="btn btn-green" onclick="startExp()">Begin →</button>
+    </div>
+    <div class="err" id="cerr">Please check your entries — code not recognized or student number missing.</div>
+  </div>
+
+  <!-- Conditional AI access block — shown only for AI groups after valid code entry -->
+  <div id="ai-access-block" style="display:none;">
+    <div class="card" style="border-color:var(--ok-bd);background:var(--ok-bg);">
+      <div class="lbl" style="color:var(--ok);margin-bottom:8px;">Your AI Tool — Required for This Session</div>
+      <h3 style="color:var(--ok);margin-bottom:10px;">Open CSU ChatGPT</h3>
+      <p style="color:#1a4a2a;">Your assigned learning method uses AI. Before proceeding, open the link below in a new tab and confirm you are logged in with your Cal Poly credentials.</p>
+      <a href="https://chat.calstate.edu" target="_blank" rel="noopener"
+         style="display:inline-block;margin-top:12px;background:var(--green);color:white;padding:11px 22px;border-radius:8px;font-weight:600;font-size:.88rem;text-decoration:none;font-family:'DM Sans',sans-serif;letter-spacing:.02em;">
+        Open chat.calstate.edu ↗
+      </a>
+      <p style="margin-top:12px;font-size:.82rem;color:#2a5a3a;">Once logged in and a new conversation is open, click Continue below.</p>
+    </div>
+  </div>
+
+  <div class="nbox" id="entry-note">
+    <strong>Before you start:</strong> Have your participant code ready. If you are in an AI group, you will be prompted to log into <strong>CSU ChatGPT</strong> via Cal Poly Portal, be sure to use your Cal Poly credentials.
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ SEC 1: TEACH ════ -->
+<div class="section" id="s1">
+  <div class="sdots">
+    <div class="dot done"></div><div class="dot now"></div>
+    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    <span class="slbl">Learn the concepts</span>
+  </div>
+  <div class="card" id="tslides">
+
+    <!-- T1 -->
+    <div class="tslide active" id="t1">
+      <div class="stitle">1 / 6 — Why Does ANOVA Compare Two Types of Variability?</div>
+      <p>Imagine a researcher tests three different study methods on student exam scores. She finds group averages of 72, 85, and 91. But does that <em>provide evidence</em> that the methods work differently — or could random chance explain those differences?</p>
+      <div class="cbox"><strong>One-Way ANOVA answers:</strong> Are the differences between group means large enough — relative to the natural variation <em>within</em> groups — to <strong>support a causal claim</strong> that the groups differ?</div>
+      <p>To answer that, ANOVA splits all the variability in the data into two buckets:</p>
+      <ul style="padding-left:20px;line-height:2.2;font-size:.92rem;">
+        <li><strong>Within-group variability</strong> — how much individuals differ <em>inside</em> the same group</li>
+        <li><strong>Between-group variability</strong> — how much the group <em>averages</em> differ from the grand mean</li>
+      </ul>
+      <p style="margin-top:9px;">The next four slides build each idea with visuals. Slide 5 brings them together in the F-ratio. Slide 6 is a summary before you start the questions.</p>
+      <div class="snav"><span></span><span class="sctr">1 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
+    </div>
+
+    <!-- T2 -->
+    <div class="tslide" id="t2">
+      <div class="stitle">2 / 6 — Within-Group Variability: The Noise</div>
+      <div class="cbox"><strong>Within-group variability</strong> measures how spread out individual <em>response variable</em> values are around their own group mean (ȳᵢ). It is the <strong>noise</strong> — variation that exists even when all members of a group received the same treatment.</div>
+
+      <p>The dot-plot below shows three groups (A, B, C). The <strong>y-axis</strong> represents the response variable (e.g., exam score). Each row is one group. Dots spread far across the range — that is large within-group variability. The dashed lines mark each group mean (ȳᵢ); notice they cluster near the same value, meaning there is little signal between groups.</p>
+
+      <div class="vwrap">
+        <svg viewBox="0 0 440 180" xmlns="http://www.w3.org/2000/svg">
+          <!-- y-axis label -->
+          <text x="8" y="90" font-size="8.5" fill="#666" font-family="monospace" text-anchor="middle" transform="rotate(-90,8,90)">Response Variable (y)</text>
+          <!-- x-axis -->
+          <line x1="44" y1="162" x2="428" y2="162" stroke="#ccc" stroke-width="1.5"/>
+          <text x="44"  y="172" font-size="8.5" fill="#999" font-family="monospace">Low</text>
+          <text x="425" y="172" font-size="8.5" fill="#999" font-family="monospace" text-anchor="end">High</text>
+          <text x="236" y="172" font-size="8.5" fill="#999" font-family="monospace" text-anchor="middle">Score →</text>
+          <!-- Group A row -->
+          <text x="38" y="38" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="700">A</text>
+          <circle cx="57"  cy="33" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="103" cy="37" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="156" cy="30" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="212" cy="35" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="272" cy="31" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="328" cy="34" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="388" cy="32" r="7" fill="#2d6a4f" opacity=".76"/>
+          <line x1="231" y1="16" x2="231" y2="52" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="231" y="12" font-size="8" fill="#2d6a4f" font-family="monospace" text-anchor="middle">ȳ_A</text>
+          <!-- Group B row -->
+          <text x="38" y="90" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="700">B</text>
+          <circle cx="64"  cy="85" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="110" cy="80" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="162" cy="87" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="218" cy="82" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="268" cy="86" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="318" cy="81" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="376" cy="85" r="7" fill="#1a4e8c" opacity=".76"/>
+          <line x1="217" y1="68" x2="217" y2="104" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="217" y="64" font-size="8" fill="#1a4e8c" font-family="monospace" text-anchor="middle">ȳ_B</text>
+          <!-- Group C row -->
+          <text x="38" y="142" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="700">C</text>
+          <circle cx="54"  cy="137" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="104" cy="141" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="162" cy="134" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="222" cy="139" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="280" cy="135" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="338" cy="140" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="394" cy="137" r="7" fill="#b5451b" opacity=".76"/>
+          <line x1="222" y1="120" x2="222" y2="156" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="222" y="116" font-size="8" fill="#b5451b" font-family="monospace" text-anchor="middle">ȳ_C</text>
+          <!-- bracket showing means close -->
+          <line x1="217" y1="6" x2="231" y2="6" stroke="#555" stroke-width="1.5"/>
+          <line x1="217" y1="3" x2="217" y2="10" stroke="#555" stroke-width="1.5"/>
+          <line x1="231" y1="3" x2="231" y2="10" stroke="#555" stroke-width="1.5"/>
+          <text x="224" y="2" font-size="7.5" fill="#555" font-family="monospace" text-anchor="middle">ȳᵢ close together</text>
+        </svg>
+        <p class="vcap">High within-group spread — dots span the full range within each group. Group means ȳᵢ (dashed lines) are close, so little between-group signal exists.</p>
+      </div>
+
+      <!-- Fill-in-the-blank -->
+      <div style="background:#f4f8ff;border:1.5px solid #b0c8ef;border-radius:10px;padding:16px 20px;margin:14px 0;">
+        <div class="lbl" style="color:#2a4a8c;margin-bottom:10px;">Check Your Understanding — Fill in the Blank</div>
+        <p style="margin-bottom:10px;font-size:.91rem;">When within-group variability is <strong>large</strong>, individual values are spread
+          <input type="text" placeholder="far / close" style="width:110px;font-size:.88rem;padding:4px 8px;border:1.5px solid #b0c8ef;border-radius:5px;font-family:'DM Mono',monospace;text-align:center;background:white;"/>
+          to their group mean ȳᵢ. This makes it
+          <input type="text" placeholder="easier / harder" style="width:110px;font-size:.88rem;padding:4px 8px;border:1.5px solid #b0c8ef;border-radius:5px;font-family:'DM Mono',monospace;text-align:center;background:white;"/>
+          for ANOVA to detect real differences between groups, because the
+          <input type="text" placeholder="signal / noise" style="width:100px;font-size:.88rem;padding:4px 8px;border:1.5px solid #b0c8ef;border-radius:5px;font-family:'DM Mono',monospace;text-align:center;background:white;"/>
+          in the denominator of F grows larger.
+        </p>
+        <p style="font-size:.78rem;color:#4a6aac;margin:0;"><em>Answers: far · harder · noise</em></p>
+      </div>
+
+      <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">2 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
+    </div>
+
+    <!-- T3 -->
+    <div class="tslide" id="t3">
+      <div class="stitle">3 / 6 — Between-Group Variability: The Signal</div>
+      <div class="cbox"><strong>Between-group variability</strong> measures how far apart the <em>group means</em> are from the <strong>grand mean</strong> (overall average of all observations). It is the <strong>signal</strong> — evidence that groups actually differ.</div>
+      <p>Here the same three groups have <em>tight</em> within-group spread but <em>separated</em> means. The gray dashed vertical line is the grand mean. Arrows show each group mean's deviation from it — that is between-group variability.</p>
+      <div class="vwrap">
+        <svg viewBox="0 0 430 165" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="ag" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2d6a4f"/></marker>
+            <marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b5451b"/></marker>
+          </defs>
+          <text x="8" y="90" font-size="8.5" fill="#666" font-family="monospace" text-anchor="middle" transform="rotate(-90,8,90)">Response Variable (y)</text>
+          <line x1="44" y1="152" x2="418" y2="152" stroke="#ccc" stroke-width="1.5"/>
+          <text x="44" y="162" font-size="9" fill="#999" font-family="monospace">Low</text>
+          <text x="415" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="end">High</text>
+          <text x="231" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="middle">Score →</text>
+          <!-- grand mean -->
+          <line x1="218" y1="6" x2="218" y2="150" stroke="#bbb" stroke-width="1.5" stroke-dasharray="3,4"/>
+          <text x="222" y="16" font-size="8.5" fill="#888" font-family="monospace">ȳ̄ (overall mean)</text>
+          <!-- A tight left ~x=92 -->
+          <text x="38" y="34" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="700">A</text>
+          <circle cx="74"  cy="28" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="85"  cy="31" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="96"  cy="26" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="106" cy="30" r="7" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="116" cy="27" r="7" fill="#2d6a4f" opacity=".76"/>
+          <line x1="95" y1="12" x2="95" y2="47" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="82" y="10" font-size="8" fill="#2d6a4f" font-family="monospace">ȳ_A</text>
+          <line x1="97" y1="8" x2="215" y2="8" stroke="#2d6a4f" stroke-width="1.4" marker-end="url(#ag)"/>
+          <text x="154" y="6" font-size="8" fill="#2d6a4f" font-family="monospace" text-anchor="middle">ȳ_A → ȳ̄</text>
+          <!-- B tight center ~x=218 -->
+          <text x="38" y="84" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="700">B</text>
+          <circle cx="202" cy="78" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="213" cy="75" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="223" cy="80" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="232" cy="76" r="7" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="241" cy="79" r="7" fill="#1a4e8c" opacity=".76"/>
+          <line x1="222" y1="62" x2="222" y2="96" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <!-- C tight right ~x=345 -->
+          <text x="38" y="134" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="700">C</text>
+          <circle cx="324" cy="128" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="335" cy="131" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="346" cy="126" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="356" cy="130" r="7" fill="#b5451b" opacity=".76"/>
+          <circle cx="366" cy="127" r="7" fill="#b5451b" opacity=".76"/>
+          <line x1="345" y1="112" x2="345" y2="147" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="358" y="112" font-size="8" fill="#b5451b" font-family="monospace">ȳ_C</text>
+          <line x1="220" y1="144" x2="342" y2="144" stroke="#b5451b" stroke-width="1.4" marker-end="url(#ar)"/>
+          <text x="279" y="142" font-size="8" fill="#b5451b" font-family="monospace" text-anchor="middle">ȳ̄ → ȳ_C</text>
+        </svg>
+        <p class="vcap">Tight clusters + widely separated group means = strong between-group signal. Arrows show deviation from the grand mean.</p>
+      </div>
+      <div class="cbox"><strong>Key idea:</strong> Large between-group variability = group means are far from the grand mean — strong evidence that groups genuinely differ. This is the <em>signal</em> ANOVA detects.</div>
+      <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">3 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
+    </div>
+
+    <!-- T4 -->
+    <div class="tslide" id="t4">
+      <div class="stitle">4 / 6 — The F-Ratio: Signal / Noise</div>
+      <div class="fbox">
+        <div class="fform">F = Between / Within</div>
+        <div class="fsub">Mean Square Between ÷ Mean Square Within</div>
+      </div>
+      <p>The F-statistic is a ratio of the two variabilities. The two dot-plots contrast a <strong>high-F</strong> scenario (clear group differences) with a <strong>low-F</strong> scenario (differences lost in noise).</p>
+      <div class="dpair">
+        <div class="vwrap">
+          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
+            <text x="118" y="13" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">High F — Clear Signal</text>
+            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
+            <circle cx="46" cy="43" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="54" cy="47" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="62" cy="41" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="70" cy="45" r="6" fill="#2d6a4f" opacity=".8"/>
+            <line x1="58" y1="29" x2="58" y2="59" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+            <circle cx="105" cy="82" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="113" cy="78" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="121" cy="83" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="129" cy="79" r="6" fill="#1a4e8c" opacity=".8"/>
+            <line x1="117" y1="66" x2="117" y2="96" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+            <circle cx="164" cy="120" r="6" fill="#b5451b" opacity=".8"/><circle cx="172" cy="116" r="6" fill="#b5451b" opacity=".8"/><circle cx="180" cy="121" r="6" fill="#b5451b" opacity=".8"/><circle cx="188" cy="117" r="6" fill="#b5451b" opacity=".8"/>
+            <line x1="176" y1="104" x2="176" y2="130" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+          </svg>
+          <p class="vcap">Separated + tight clusters → F >> 1</p>
+        </div>
+        <div class="vwrap">
+          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
+            <text x="118" y="13" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Low F — Noise Wins</text>
+            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
+            <circle cx="30" cy="43" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="66" cy="47" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="105" cy="41" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="145" cy="45" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="186" cy="42" r="6" fill="#2d6a4f" opacity=".75"/>
+            <line x1="107" y1="29" x2="107" y2="59" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+            <circle cx="38" cy="82" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="76" cy="77" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="114" cy="82" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="155" cy="78" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="196" cy="81" r="6" fill="#1a4e8c" opacity=".75"/>
+            <line x1="116" y1="66" x2="116" y2="96" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+            <circle cx="25" cy="120" r="6" fill="#b5451b" opacity=".75"/><circle cx="63" cy="115" r="6" fill="#b5451b" opacity=".75"/><circle cx="110" cy="120" r="6" fill="#b5451b" opacity=".75"/><circle cx="157" cy="116" r="6" fill="#b5451b" opacity=".75"/><circle cx="199" cy="119" r="6" fill="#b5451b" opacity=".75"/>
+            <line x1="111" y1="104" x2="111" y2="130" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+          </svg>
+          <p class="vcap">Overlapping groups, wide spread → F ≈ 1</p>
+        </div>
+      </div>
+      <table class="itable">
+        <tr><th>F value</th><th>What it means</th></tr>
+        <tr><td><strong>F >> 1</strong></td><td>Between-group differences are large relative to within-group noise — strong evidence against equal means.</td></tr>
+        <tr><td><strong>F ≈ 1</strong></td><td>Group differences are about the same size as random noise — little evidence the groups differ.</td></tr>
+        <tr><td><strong>F &lt; 0</strong></td><td>Impossible. Both components are mean squares (always ≥ 0), so F ≥ 0 always.</td></tr>
+      </table>
+      <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">4 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
+    </div>
+
+    <!-- T5 -->
+    <div class="tslide" id="t5">
+      <div class="stitle">5 / 6 — The Equal Variance Condition</div>
+      <div class="cbox">ANOVA assumes that within-group variability is <strong>roughly equal across all groups</strong>. This is called <em>homoscedasticity</em> or the <strong>equal variance condition</strong>.</div>
+      <p>The panels below contrast equal variance (ANOVA works well) vs. unequal variance (ANOVA is unreliable).</p>
+      <div class="dpair">
+        <div class="vwrap">
+          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
+            <text x="118" y="13" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">Equal Variance ✓</text>
+            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
+            <circle cx="47" cy="43" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="55" cy="47" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="63" cy="41" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="71" cy="45" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="104" cy="80" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="112" cy="76" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="120" cy="81" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="128" cy="77" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="158" cy="118" r="6" fill="#b5451b" opacity=".82"/><circle cx="166" cy="114" r="6" fill="#b5451b" opacity=".82"/><circle cx="174" cy="119" r="6" fill="#b5451b" opacity=".82"/><circle cx="182" cy="115" r="6" fill="#b5451b" opacity=".82"/>
+            <line x1="45" y1="56" x2="73" y2="56" stroke="#2d6a4f" stroke-width="1.5"/>
+            <line x1="102" y1="92" x2="130" y2="92" stroke="#1a4e8c" stroke-width="1.5"/>
+            <line x1="156" y1="128" x2="184" y2="128" stroke="#b5451b" stroke-width="1.5"/>
+          </svg>
+          <p class="vcap">Similar spread in all groups — condition met</p>
+        </div>
+        <div class="vwrap">
+          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
+            <text x="118" y="13" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Unequal Variance ✗</text>
+            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
+            <circle cx="52" cy="43" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="58" cy="47" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="64" cy="41" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="70" cy="45" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="24" cy="80" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="60" cy="76" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="100" cy="81" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="148" cy="77" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="200" cy="80" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="156" cy="118" r="6" fill="#b5451b" opacity=".82"/><circle cx="164" cy="114" r="6" fill="#b5451b" opacity=".82"/><circle cx="172" cy="119" r="6" fill="#b5451b" opacity=".82"/><circle cx="180" cy="115" r="6" fill="#b5451b" opacity=".82"/>
+            <line x1="50" y1="56" x2="72" y2="56" stroke="#2d6a4f" stroke-width="1.5"/>
+            <line x1="22" y1="92" x2="202" y2="92" stroke="#1a4e8c" stroke-width="1.5"/>
+            <text x="112" y="104" font-size="8.5" fill="#1a4e8c" font-family="monospace" text-anchor="middle">Group B is much wider</text>
+            <line x1="154" y1="128" x2="182" y2="128" stroke="#b5451b" stroke-width="1.5"/>
+          </svg>
+          <p class="vcap">Group B far wider — condition violated</p>
+        </div>
+      </div>
+      <div class="cbox"><strong>Why it matters:</strong> ANOVA pools within-group variance from all groups into one estimate for the denominator of F. If one group is far more spread out, that pooled estimate is distorted and the F-test becomes unreliable. <em>Rule of thumb:</em> largest SD ≤ ~2× smallest SD.</div>
+      <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">5 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
+    </div>
+
+    <!-- T6 Summary -->
+    <div class="tslide" id="t6">
+      <div class="stitle">6 / 6 — Summary Before the Activity</div>
+      <table class="itable">
+        <tr><th>Concept</th><th>What it is</th><th>Role in ANOVA</th></tr>
+        <tr><td><strong>Within-group variability</strong></td><td>Spread of individuals around their own group mean</td><td>Noise — denominator of F</td></tr>
+        <tr><td><strong>Between-group variability</strong></td><td>Spread of group means around the grand mean</td><td>Signal — numerator of F</td></tr>
+        <tr><td><strong>F-ratio</strong></td><td>Between ÷ Within</td><td>Large F → evidence groups differ; always ≥ 0</td></tr>
+        <tr><td><strong>Equal variance condition</strong></td><td>Within-group spread roughly equal across groups</td><td>Required for F-test to be reliable</td></tr>
+      </table>
+      <div class="nbox" style="margin-top:14px;"><strong>Ready?</strong> You will now use your assigned learning method to answer four questions. Click Continue when ready.</div>
+      <div class="snav">
+        <button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button>
+        <span class="sctr">6 / 6</span>
+        <button class="btn btn-gold" onclick="go('s2')">Continue →</button>
+      </div>
+    </div>
+
+  </div><!-- /tslides -->
+</div>
+
+<!-- ════════════════════════════════════ SEC 2: SESSION ════ -->
+<div class="section" id="s2">
+  <div class="sdots">
+    <div class="dot done"></div><div class="dot done"></div>
+    <div class="dot now"></div><div class="dot"></div><div class="dot"></div>
+    <span class="slbl">Session &amp; Questions</span>
+  </div>
+
+  <!-- Timer -->
+  <div class="timer-wrap">
+    <div class="timer-lbl">Time Remaining</div>
+    <div class="timer-display" id="timer-display">15:00</div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="timer-sub" id="timer-sub">Use your assigned method and answer all four questions below.</div>
+    <div class="timer-controls">
+      <button class="tbtn" id="pause-btn" onclick="pauseTimer()">Pause</button>
+      <button class="tbtn" onclick="resetTimer()">Reset</button>
+    </div>
+  </div>
+
+  <!-- Method panel: group-specific tool instructions, injected by JS -->
+  <div id="mcontent"></div>
+
+  <hr class="divider" style="margin:20px 0;">
+
+  <!-- Questions -->
+  <div id="qremind"></div>
+
+  <!-- Q1 -->
+  <div class="qblock" id="q1">
+    <div class="qnum">Question 1 of 4 &middot; Multiple Choice</div>
+    <div class="qscen">A researcher studies whether three teaching methods (A, B, C) produce different exam scores. Within Method A, scores range from 55 to 89. Within Method B, scores range from 70 to 74.</div>
+    <div class="qtext">Which statement best describes <em>within-group variability</em> (the noise in ANOVA)?</div>
+    <div class="opts" id="q1o">
+      <button class="obt" onclick="mc('q1','A')"><span class="olt">A</span><span>It measures how far each group mean <span style="text-decoration: overline;">y</span> is from the overall mean &mdash; the between-group signal.</span></button>
+      <button class="obt" onclick="mc('q1','B')"><span class="olt">B</span><span>It measures how spread out individual response variable values are around their own group mean <span style="text-decoration: overline;">y</span> &mdash; the denominator of the F-statistic.</span></button>
+      <button class="obt" onclick="mc('q1','C')"><span class="olt">C</span><span>It measures the total variance across all observations regardless of group membership.</span></button>
+      <button class="obt" onclick="mc('q1','D')"><span class="olt">D</span><span>It is the numerator of the F-statistic and grows larger when groups differ more.</span></button>
+    </div> 
+  </div>
+
+  <!-- Q2 -->
+  <div class="qblock" id="q2">
+    <div class="qnum">Question 2 of 4 &middot; Multiple Choice</div>
+    <div class="qscen">Three teaching method groups had group means <span style="text-decoration: overline;"><i>y</i></span><sub>A</sub> = 72, <span style="text-decoration: overline;"><i>y</i></span><sub>B</sub> = 85,  <span style="text-decoration: overline;"><i>y</i></span><sub>C</sub> = 91. The overall mean was 83.</div>
+    <div class="qtext">Which of the following best describes <em>between-group variability</em> &mdash; the signal ANOVA uses?</div>
+    <div class="opts" id="q2o">
+      <button class="obt" onclick="mc('q2','A')"><span class="olt">A</span><span>The spread of individual scores within each group around their group mean <span style="text-decoration: overline;">y</span>.</span></button>
+      <button class="obt" onclick="mc('q2','B')"><span class="olt">B</span><span>The total distribution of all scores combined, ignoring which group each score belongs to.</span></button>
+      <button class="obt" onclick="mc('q2','C')"><span class="olt">C</span><span>The deviations of the group means <span style="text-decoration: overline;">y</span> from the overall mean &mdash; how far apart the groups are on average.</span></button>
+      <button class="obt" onclick="mc('q2','D')"><span class="olt">D</span><span>The denominator of the F-statistic, representing noise in the data.</span></button>
+    </div>
+    <div class="fb" id="q2fb"></div>
+  </div>
+
+  <!-- Q3 MA -->
+  <div class="qblock" id="q3">
+    <div class="qnum">Question 3 of 4 &middot; Multiple Answer &mdash; Select ALL that apply</div>
+    <div class="qscen">
+      A researcher runs a one-way ANOVA comparing three teaching methods on exam scores.<br>
+      The output shows: <strong>F = 9.2, p-value = 0.003</strong>.
+    </div>
+    <div class="qtext">Select <em>all</em> statements that correctly interpret this test statistic and p-value.</div>
+    <div class="opts" id="q3o">
+      <div class="maopt" onclick="tma('q3','A')"><div class="mchk" id="q3Ac"></div><span class="olt" id="q3Al">A</span><span>The F-statistic of 9.2 means between-group variability is about 9&times; larger than within-group variability &mdash; a strong signal relative to noise.</span></div>
+      <div class="maopt" onclick="tma('q3','B')"><div class="mchk" id="q3Bc"></div><span class="olt" id="q3Bl">B</span><span>The p-value of 0.003 provides evidence against the null hypothesis that all group means are equal &mdash; we would rarely see F = 9.2 by chance alone if H&#8320; were true.</span></div>
+      <div class="maopt" onclick="tma('q3','C')"><div class="mchk" id="q3Cc"></div><span class="olt" id="q3Cl">C</span><span>F = 9.2 is impossible because the F-statistic cannot exceed 5.</span></div>
+      <div class="maopt" onclick="tma('q3','D')"><div class="mchk" id="q3Dc"></div><span class="olt" id="q3Dl">D</span><span>A p-value of 0.003 proves that teaching method A causes higher scores than methods B and C.</span></div>
+      <div class="maopt" onclick="tma('q3','E')"><div class="mchk" id="q3Ec"></div><span class="olt" id="q3El">E</span><span>The F-statistic is always &ge; 0 because it is a ratio of mean squares &mdash; quantities that cannot be negative.</span></div>
+    </div>
+    <div class="fb" id="q3fb"></div>
+  </div>
+
+  <!-- Q4 MA -->
+  <div class="qblock" id="q4">
+    <div class="qnum">Question 4 of 4 &middot; Multiple Answer &mdash; Select ALL that apply</div>
+    <div class="qscen">
+      Group A: 78, 80, 79, 81, 77 &nbsp;|&nbsp; Group B: 42, 65, 88, 91, 55 &nbsp;|&nbsp; Group C: 72, 74, 73, 75, 71<br>
+      ANOVA output: <strong>F = 4.1, p-value = 0.041</strong>
+    </div>
+    <div class="qtext">Which statements are correct about interpreting these results and the <em>equal variance condition</em>?</div>
+    <div class="opts" id="q4o">
+      <div class="maopt" onclick="tma('q4','A')"><div class="mchk" id="q4Ac"></div><span class="olt" id="q4Al">A</span><span>The equal variance condition appears violated &mdash; Group B&rsquo;s spread is far larger than Groups A and C, which may make F and the p-value unreliable.</span></div>
+      <div class="maopt" onclick="tma('q4','B')"><div class="mchk" id="q4Bc"></div><span class="olt" id="q4Bl">B</span><span>The p-value of 0.041 provides evidence against equal group means, but we should interpret it cautiously given the unequal within-group variability.</span></div>
+      <div class="maopt" onclick="tma('q4','C')"><div class="mchk" id="q4Cc"></div><span class="olt" id="q4Cl">C</span><span>The equal variance condition requires all group means to be equal before running ANOVA.</span></div>
+      <div class="maopt" onclick="tma('q4','D')"><div class="mchk" id="q4Dc"></div><span class="olt" id="q4Dl">D</span><span>A rough check: the largest group standard deviation should be no more than ~2&times; the smallest. Here that is clearly violated.</span></div>
+      <div class="maopt" onclick="tma('q4','E')"><div class="mchk" id="q4Ec"></div><span class="olt" id="q4El">E</span><span>A small p-value alone is sufficient to support a causal claim that one teaching method produces higher scores than others.</span></div>
+    </div>
+    <div class="fb" id="q4fb"></div>
+  </div>
+
+  <!-- Submit all -->
+  <div style="margin-top:24px;">
+    <div class="nbox" id="qwarn" style="margin-bottom:14px;display:none;">
+      <strong>Almost there:</strong> <span id="qwarn-detail"></span>
+    </div>
+    <button class="btn btn-green btn-full" id="submit-all-btn" onclick="submitAllAnswers()">
+      Submit All Answers &rarr;
+    </button>
+  </div>
+
+  <!-- Waiting panel shown after answers submitted -->
+  <div id="qcont" style="display:none;margin-top:20px;">
+    <div class="card" id="waiting-card" style="border-color:var(--gold);background:#fffdf0;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+        <div id="wait-icon" style="font-size:1.4rem;">⏳</div>
+        <div>
+          <h3 id="wait-title" style="margin-bottom:3px;">Answers recorded — please wait</h3>
+          <p id="wait-msg" style="font-size:.875rem;margin:0;color:var(--muted);">Your answers have been saved. Keep your study materials and AI conversation open until time expires. You can continue reviewing.</p>
+        </div>
+      </div>
+      <div id="wait-timer-row" style="font-family:'DM Mono',monospace;font-size:.8rem;color:var(--muted);margin-top:4px;">
+        Time remaining on session: <span id="wait-countdown" style="font-weight:600;color:var(--ink);"></span>
+      </div>
+      <button class="btn btn-gold" id="continue-btn" onclick="buildSubmit();go('s3')" style="margin-top:14px;display:none;">
+        Continue to Results &rarr;
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ SEC 3: SUBMIT ════ -->
+<div class="section" id="s3">
+  <div class="sdots">
+    <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+    <div class="dot now"></div>
+    <span class="slbl">Submit &amp; finish</span>
+  </div>
+
+  <div id="scorediv"></div>
+
+  <div class="card" id="subcard"><!-- JS --></div>
+
+  <div class="card" style="text-align:center;">
+    <div class="lbl" style="margin-bottom:11px;">Submit your results to the class record</div>
+    <p style="font-size:.87rem;margin-bottom:0;">Click below to send your code, score, and AI conversation (if applicable) to the research database.</p>
+    <button class="btn btn-green btn-full" id="gsbtn" onclick="submitGS()">
+      <span id="gsbtxt">Submit to Research Record →</span>
+      <div class="spin" id="gsspin"></div>
+    </button>
+    <div id="gsres" style="margin-top:12px;font-size:.875rem;display:none;"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════ SEC 4: DONE ════ -->
+<div class="section" id="s4">
+  <div class="card" style="text-align:center;padding:36px;">
+    <div class="ccheck">✓</div>
+    <h2 style="margin-bottom:9px;">You're all set!</h2>
+    <p>Your results have been recorded. Please wait for your instructor's next instruction.</p>
+    <p style="margin-top:14px;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);">Code: <span id="dcode"></span> &nbsp;·&nbsp; Score: <span id="dscore"></span></p>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// INSTRUCTOR: fill GROUP_LOOKUP with real codes before the experiment.
+// Replace SHEETS_URL with your deployed Apps Script web app URL.
+// ═══════════════════════════════════════════════════════
+const GROUP_LOOKUP = {
+  "1001":"control","1002":"control","1003":"control","1004":"control","1005":"control",
+  "1006":"control","1007":"control","1008":"control","1009":"control","1010":"control",
+  "2001":"nostructure","2002":"nostructure","2003":"nostructure","2004":"nostructure","2005":"nostructure",
+  "2006":"nostructure","2007":"nostructure","2008":"nostructure","2009":"nostructure","2010":"nostructure",
+  "3001":"structure","3002":"structure","3003":"structure","3004":"structure","3005":"structure",
+  "3006":"structure","3007":"structure","3008":"structure","3009":"structure","3010":"structure",
+};
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxd292jDfcAOVsJet0T2Uq-516HsnuHnCmBRBllVFDRsWfqs760N_4DFhaZuW1-zy9_/exec";
+const MS_FORMS_URL = "https://forms.cloud.microsoft/r/PYiH8kKjCV";
+const SESSION_DURATION = 15 * 3; // 15 minutes in seconds
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let grp=null, code=null, studentNum=null;
+let sc={q1:null,q2:null,q3:null,q4:null};
+let maSel={q3:new Set(),q4:new Set()};
+let chat='';
+let timerInterval=null, secondsLeft=SESSION_DURATION, timerRunning=false;
+const SECS=['s0','s1','s2','s3','s4'];
+const PROG=[0,20,55,85,100];
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+function go(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('pfill').style.width=PROG[SECS.indexOf(id)]+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+// ENTRY
+// ═══════════════════════════════════════════════════════
+function startExp(){
+  const raw=document.getElementById('ci').value.trim();
+  const sn=document.getElementById('snum').value.trim();
+  const g=GROUP_LOOKUP[raw];
+  if(!g||!sn){document.getElementById('cerr').style.display='block';return;}
+  code=raw; grp=g; studentNum=sn;
+  document.getElementById('dcode').textContent=raw;
+  document.getElementById('cerr').style.display='none';
+  buildMethod(g);
+  buildRemind(g);
+  go('s2');
+  startTimer();
+}
+document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')startExp();});
+document.getElementById('snum').addEventListener('keydown',e=>{if(e.key==='Enter')startExp();});
+
+// Teaching slides exist in HTML but are skipped in this version of the experiment.
+
+// ═══════════════════════════════════════════════════════
+// METHOD CARD (no experimental labels visible)
+// ═══════════════════════════════════════════════════════
+// Shared Portal access steps HTML snippet
+const PORTAL_STEPS = `
+  <div style="background:#edf7f2;border:1.5px solid var(--ok-bd);border-radius:10px;padding:14px 18px;margin:12px 0;">
+    <div style="font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ok);margin-bottom:7px;">How to open ChatGPT Edu</div>
+    <ol class="steps" style="font-size:.86rem;">
+      <li>Go to <strong>my.calpoly.edu</strong> and sign in with your Cal Poly credentials</li>
+      <li>Scroll down to the <strong>My Apps</strong> section on the home page</li>
+      <li>Find <strong>ChatGPT Edu</strong> near the bottom of the list and click it</li>
+      <li>A new tab opens — click <strong>New chat</strong> to start a fresh conversation</li>
+      <li>Keep this tab open alongside this page throughout the session</li>
+    </ol>
+    <p style="font-size:.78rem;color:#5a4000;margin-top:8px;margin-bottom:0;"><strong>Tip:</strong> If you don't see it, type "ChatGPT" in the My Apps search box. Raise your hand if you need help.</p>
+  </div>`;
+
+function buildMethod(g){
+  let h='';
+  if(g==='control'){
+    h=`<div class="card" style="border-color:var(--ok-bd);background:var(--ok-bg);">
+      <h3 style="color:var(--ok);margin-bottom:8px;">Your method: Memory &amp; Notes only</h3>
+      <p>Answer the four questions below using only what you remember from the ANOVA lesson and any handwritten notes from class. No AI, no internet, no phone.</p>
+      <div class="nbox"><strong>No AI &nbsp;&middot;&nbsp; No Google &nbsp;&middot;&nbsp; No Assistance</strong></div>
+    </div>`;
+  } else if(g==='nostructure'){
+    h=`<div class="card" style="border-color:#a8bce8;background:#eef2fb;">
+      <h3 style="color:#1a3a7c;margin-bottom:8px;">Your method: Free AI exploration</h3>
+      <p>Use <strong>ChatGPT Edu</strong> to explore the concepts as you answer the four questions. Ask anything — there is no required format or number of prompts.</p>
+      ${PORTAL_STEPS}
+      <div class="cbox" style="margin-top:4px;"><strong>Suggested starting point:</strong><br>"Help me understand the difference between within-group and between-group variability in the context of one-way ANOVA."</div>
+      <div class="nbox" style="margin-top:8px;"><strong>Keep your ChatGPT tab open</strong> — you will submit your conversation at the end.</div>
+    </div>`;
+  } else {
+    h=`<div class="card" style="border-color:#c8b8ef;background:#f4f0ff;">
+      <h3 style="color:#4a1f8c;margin-bottom:8px;">Your method: Structured AI (RTF)</h3>
+      <p>Use <strong>ChatGPT Edu</strong> with the <strong>RTF format</strong> (Role &middot; Task &middot; Format) for every prompt you send while working through the four questions.</p>
+      ${PORTAL_STEPS}
+      <div class="pguide" style="margin-top:10px;">
+        <div class="pglbl">RTF Prompt 1 — copy, fill in the blanks, send</div>
+        <div class="pblock">Act as a <span class="fill">[patient statistics professor / expert tutor]</span>.
+
+Teach me the difference between within-group variability and between-group variability in one-way ANOVA.
+
+Explain using <span class="fill">[a concrete real-world example]</span> and define all key terms clearly.</div>
+      </div>
+      <div class="pguide" style="background:#f4f0ff;border-color:#c8b8ef;margin-top:6px;">
+        <div class="pglbl" style="color:#6240b5;">Follow-Up RTF Template — every follow-up question</div>
+        <div class="pblock" style="border-color:#d0c0f0;color:#3d2a7a;">Act as the same tutor.
+
+Now explain <span class="fill">[the F-ratio / the equal variance condition / what F &gt;&gt; 1 means]</span>.
+
+Give me a <span class="fill">[step-by-step breakdown / comparison / example]</span> in plain language.</div>
+      </div>
+      <div class="nbox" style="margin-top:8px;"><strong>Keep your ChatGPT tab open</strong> — you will submit your conversation at the end.</div>
+    </div>`;
+  }
+  document.getElementById('mcontent').innerHTML=h;
+}
+
+function buildRemind(g){
+  const h = g==='control'
+    ? `<div class="nbox" style="margin-bottom:14px;"><strong>Instructions:</strong> Work through the four questions using only your memory of the ANOVA lesson and your handwritten notes. No external resources.</div>`
+    : `<div class="nbox" style="margin-bottom:14px;"><strong>Instructions:</strong> Use ChatGPT Edu to help you understand and answer each question. Keep the tab open alongside this page.</div>`;
+  document.getElementById('qremind').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
+// ANSWER KEY + EXPLANATIONS
+// ═══════════════════════════════════════════════════════
+const CORRECT = { q1:['B'], q2:['C'], q3:['A','B','E'], q4:['A','B','D'] };
+
+const MCE={
+  q1:{
+    A:{r:false,t:'This describes between-group variability — the deviation of group means ȳᵢ from the overall mean ȳ̄. That is the numerator (signal) of the F-statistic, not the denominator.'},
+    B:{r:true, t:'Correct. Within-group variability measures how individual response values scatter around their group mean ȳᵢ. It is the noise — the denominator of the F-statistic.'},
+    C:{r:false,t:'This describes total variability. ANOVA partitions total variability into within-group (noise) and between-group (signal) components.'},
+    D:{r:false,t:'The numerator of F is between-group variability (the signal). Within-group variability is the denominator — the noise the signal must overcome.'}
+  },
+  q2:{
+    A:{r:false,t:'This describes within-group variability — individual response values diverging from their own group mean ȳᵢ. That is noise, not signal.'},
+    B:{r:false,t:'This describes total variability, which ignores group structure entirely. Between-group variability specifically compares group means to ȳ̄.'},
+    C:{r:true, t:'Correct. Between-group variability is captured by the deviations of each group mean ȳᵢ from the overall mean ȳ̄. The further apart the group means, the stronger the signal in the numerator of F.'},
+    D:{r:false,t:'Between-group variability is the numerator of F (Mean Square Between). The denominator is within-group variability (Mean Square Within / Error).'}
+  }
+};
+
+const MAE={
+  q3:{
+    A:{r:true, t:'Correct. F = Between/Within = 9.2 means between-group variability is ~9× larger than within-group noise — a strong signal relative to the denominator.'},
+    B:{r:true, t:'Correct. The p-value of 0.003 means that if H₀ (all group means ȳᵢ equal) were true, we would observe F ≥ 9.2 only 0.3% of the time by chance. This provides evidence against H₀ — but does not prove causation.'},
+    C:{r:false,t:'There is no upper bound on F. F can be any value ≥ 0. Large F values simply indicate strong signal relative to noise.'},
+    D:{r:false,t:'A small p-value provides evidence against equal means, but it does not prove causation. ANOVA requires a designed experiment with random assignment to support a causal claim.'},
+    E:{r:true, t:'Correct. F is a ratio of mean squares (sums of squared deviations ÷ degrees of freedom). Squared quantities are always ≥ 0, so F ≥ 0 always.'}
+  },
+  q4:{
+    A:{r:true, t:'Correct. Group B spans from 42 to 91 (range = 49), while Groups A and C each span only ~4 points. This severe imbalance violates the equal variance condition, casting doubt on the reliability of F = 4.1 and p = 0.041.'},
+    B:{r:true, t:'Correct. The p-value of 0.041 does provide some evidence against equal group means ȳᵢ, but because the equal variance condition is violated, the denominator of F is distorted. The result should be interpreted cautiously and a Welch ANOVA or transformation considered.'},
+    C:{r:false,t:'The equal variance condition is about within-group spread (variability of response values around ȳᵢ), not about the group means themselves. ANOVA is specifically designed to test whether group means differ.'},
+    D:{r:true, t:'Correct. A practical rule: if the largest group SD > ~2× the smallest group SD, the condition is suspect. Here Group B\'s SD is roughly 10× larger than Groups A and C — a clear violation.'},
+    E:{r:false,t:'A small p-value provides evidence against equal group means, but it cannot support a causal claim on its own. Causation requires random assignment and elimination of confounds — not just a significant test statistic.'}
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// MC — just record the selection, highlight chosen option
+// ═══════════════════════════════════════════════════════
+// mcSel tracks the currently selected letter per MC question
+let mcSel = { q1: null, q2: null };
+
+function mc(qid, chose) {
+  if (sc[qid] !== null) return; // already graded, ignore
+  mcSel[qid] = chose;
+  // Visual: highlight selected, clear others
+  document.querySelectorAll(`#${qid}o .obt`).forEach(b => {
+    const l = b.querySelector('.olt').textContent;
+    b.classList.toggle('sel-mc', l === chose);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// MA — toggle selections (unchanged logic)
+// ═══════════════════════════════════════════════════════
+function tma(qid, l) {
+  if (sc[qid] !== null) return;
+  const s = maSel[qid];
+  const els = document.querySelectorAll(`#${qid}o .maopt`);
+  const idx = ['A','B','C','D','E'].indexOf(l);
+  const el = els[idx];
+  const chk = document.getElementById(`${qid}${l}c`);
+  if (s.has(l)) { s.delete(l); el.classList.remove('sel'); chk.textContent = ''; }
+  else          { s.add(l);    el.classList.add('sel');    chk.textContent = '✓'; }
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT ALL — validate, grade, reveal all feedback
+// ═══════════════════════════════════════════════════════
+function submitAllAnswers() {
+  // Validation: check every question has a selection
+  const missing = [];
+  if (!mcSel.q1) missing.push('Question 1');
+  if (!mcSel.q2) missing.push('Question 2');
+  if (maSel.q3.size === 0) missing.push('Question 3');
+  if (maSel.q4.size === 0) missing.push('Question 4');
+
+  if (missing.length > 0) {
+    const warn = document.getElementById('qwarn');
+    document.getElementById('qwarn-detail').textContent =
+      `Please make a selection for: ${missing.join(', ')}.`;
+    warn.style.display = 'block';
+    warn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Lock the submit button
+  const btn = document.getElementById('submit-all-btn');
+  btn.disabled = true;
+  btn.textContent = 'Answers submitted ✓';
+  document.getElementById('qwarn').style.display = 'none';
+
+  // Grade and reveal all four questions
+  gradeMC('q1', mcSel.q1);
+  gradeMC('q2', mcSel.q2);
+  gradeMA('q3', ['A','B','E']);
+  gradeMA('q4', ['A','B','D']);
+
+  // Show waiting panel
+  document.getElementById('qcont').style.display = 'block';
+  // Only unlock Continue button if timer has already expired
+  if(secondsLeft<=0){
+    const cbtn=document.getElementById('continue-btn');
+    if(cbtn) cbtn.style.display='block';
+    const wt=document.getElementById('wait-title');
+    if(wt) wt.textContent='Time is up — you may now proceed';
+    const wm=document.getElementById('wait-msg');
+    if(wm) wm.textContent='The session has ended. Click Continue to Results below.';
+    const wi=document.getElementById('wait-icon');
+    if(wi) wi.textContent='✓';
+    const wr=document.getElementById('wait-timer-row');
+    if(wr) wr.style.display='none';
+  } else {
+    const m2=Math.floor(secondsLeft/60), s2=secondsLeft%60;
+    const wc=document.getElementById('wait-countdown');
+    if(wc) wc.textContent=`${m2}:${s2.toString().padStart(2,'0')}`;
+  }
+  document.getElementById('qcont').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Grade a single MC question and reveal feedback
+function gradeMC(qid, chose) {
+  const corr = CORRECT[qid];
+  const ok = corr.includes(chose);
+  sc[qid] = ok ? 1 : 0;
+
+  document.querySelectorAll(`#${qid}o .obt`).forEach(b => {
+    b.disabled = true;
+    b.classList.remove('sel-mc');
+    const l = b.querySelector('.olt').textContent;
+    if (corr.includes(l))       b.classList.add('show-ok');
+    if (l === chose && !ok)     b.classList.add('no');
+    if (l === chose && ok)      b.classList.add('ok');
+  });
+
+  const e = MCE[qid];
+  let exp = '<div class="expls">';
+  ['A','B','C','D'].filter(l => e[l]).forEach(l => {
+    exp += `<div class="erow"><span class="elt ${e[l].r?'r':'w'}">${l}${e[l].r?' ✓':' ✗'}</span><span>${e[l].t}</span></div>`;
+  });
+  exp += '</div>';
+  const fb = document.getElementById(`${qid}fb`);
+  fb.className = `fb ${ok ? 'ok' : 'no'}`;
+  fb.innerHTML = `<strong>${ok ? '✓ Correct!' : '✗ Not quite.'}</strong>${exp}`;
+}
+
+// Grade a single MA question and reveal feedback
+function gradeMA(qid, corr) {
+  const ch = [...maSel[qid]].sort();
+  const co = [...corr].sort();
+  const full = ch.join('') === co.join('');
+  const partial = !full && ch.length > 0 && ch.some(l => co.includes(l));
+  sc[qid] = full ? 1 : partial ? 0.5 : 0;
+
+  const LTR = ['A','B','C','D','E'];
+  document.querySelectorAll(`#${qid}o .maopt`).forEach((el, i) => {
+    const l = LTR[i]; el.onclick = null; el.classList.remove('sel');
+    const chk = document.getElementById(`${qid}${l}c`);
+    if (co.includes(l)) {
+      el.classList.add('show-ok'); chk.textContent = '✓';
+      chk.style.background = '#1a6b3a'; chk.style.borderColor = '#1a6b3a';
+    }
+    if (ch.includes(l) && !co.includes(l)) {
+      el.classList.add('no'); chk.textContent = '✗';
+      chk.style.background = '#b5451b'; chk.style.borderColor = '#b5451b';
+    }
+  });
+
+  const e = MAE[qid];
+  let exp = '<div class="expls">';
+  LTR.filter(l => e[l]).forEach(l => {
+    exp += `<div class="erow"><span class="elt ${e[l].r?'r':'w'}">${l}${e[l].r?' ✓':' ✗'}</span><span>${e[l].t}</span></div>`;
+  });
+  exp += '</div>';
+  const fb = document.getElementById(`${qid}fb`);
+  const cls = full ? 'ok' : partial ? 'pt' : 'no';
+  const msg = full ? '✓ All correct!' : partial ? '~ Partially correct — see explanations below.' : '✗ Not quite — review the explanations below.';
+  fb.className = `fb ${cls}`;
+  fb.innerHTML = `<strong>${msg}</strong>${exp}`;
+}
+
+
+// ═══════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════
+function startTimer(){
+  if(timerRunning) return;
+  timerRunning=true;
+  document.getElementById('pause-btn').textContent='Pause';
+  timerInterval=setInterval(tickTimer,1000);
+}
+function tickTimer(){
+  if(secondsLeft<=0){
+    clearInterval(timerInterval); timerRunning=false;
+    document.getElementById('timer-display').textContent='0:00';
+    document.getElementById('timer-display').classList.add('urgent');
+    document.getElementById('timer-bar').style.width='0%';
+    document.getElementById('timer-sub').textContent='Time is up — submit your answers below.';
+    // Unlock the continue button if answers already submitted
+    const cbtn=document.getElementById('continue-btn');
+    if(cbtn) cbtn.style.display='block';
+    const wt=document.getElementById('wait-title');
+    if(wt) wt.textContent='Time is up — you may now proceed';
+    const wm=document.getElementById('wait-msg');
+    if(wm) wm.textContent='The session has ended. Click Continue to Results below to submit your responses.';
+    const wi=document.getElementById('wait-icon');
+    if(wi) wi.textContent='✓';
+    const wr=document.getElementById('wait-timer-row');
+    if(wr) wr.style.display='none';
+    return;
+  }
+  secondsLeft--;
+  const pct=(secondsLeft/SESSION_DURATION)*100;
+  const m=Math.floor(secondsLeft/60), s=secondsLeft%60;
+  const disp=document.getElementById('timer-display');
+  disp.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  document.getElementById('timer-bar').style.width=pct+'%';
+  const wc=document.getElementById('wait-countdown');
+  if(wc) wc.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+  if(secondsLeft<=120) disp.classList.add('urgent');
+  if(secondsLeft===120) document.getElementById('timer-sub').textContent='2 minutes remaining — wrap up.';
+  if(secondsLeft===60)  document.getElementById('timer-sub').textContent='1 minute remaining.';
+}
+function pauseTimer(){
+  if(timerRunning){
+    clearInterval(timerInterval); timerRunning=false;
+    document.getElementById('pause-btn').textContent='Resume';
+  } else { startTimer(); }
+}
+function resetTimer(){
+  clearInterval(timerInterval); timerRunning=false; secondsLeft=SESSION_DURATION;
+  document.getElementById('timer-display').textContent='15:00';
+  document.getElementById('timer-display').classList.remove('urgent');
+  document.getElementById('timer-bar').style.width='100%';
+  document.getElementById('timer-sub').textContent='Use your assigned method and answer all four questions below.';
+  document.getElementById('pause-btn').textContent='Pause';
+}
+
+// ═══════════════════════════════════════════════════════
+// SCORE + SUBMIT SCREEN
+// ═══════════════════════════════════════════════════════
+function buildSubmit(){
+  const tot=Object.values(sc).reduce((a,b)=>a+(b||0),0);
+  const pct=Math.round((tot/4)*100);
+  document.getElementById('dscore').textContent=`${tot}/4`;
+  document.getElementById('scorediv').innerHTML=`
+    <div class="score-sum">
+      <div class="score-lbl">YOUR SCORE</div>
+      <div class="score-big">${tot}<span style="font-size:1.4rem;opacity:.55">/4</span></div>
+      <div class="sbar-wrap"><div class="sbar" id="sbarfill" style="width:0"></div></div>
+      <div class="score-lbl">${pct}%</div>
+    </div>`;
+  setTimeout(()=>{const b=document.getElementById('sbarfill');if(b)b.style.width=pct+'%';},120);
+
+  let subH='';
+  if(grp==='control'){
+    subH=`<h3>No conversation to submit</h3>
+    <p>You did not use an AI tool, so there is no conversation to submit. After submitting your record below, complete the <strong>Post-Test on Canvas</strong>.</p>
+    <div class="nbox">Canvas → Quizzes → <strong>Post-Test: One-Way ANOVA</strong></div>`;
+  } else {
+    subH=`<h3>Step 1 — Submit your conversation via Microsoft Forms</h3>
+    <p>Click the button below to open the prompt submission form. You will paste your ChatGPT conversation there.</p>
+    <ol class="steps" style="margin-bottom:12px;">
+      <li>Switch to your CSU ChatGPT tab</li>
+      <li>Select all text: <strong>Ctrl+A</strong> / <strong>⌘+A</strong>, then copy: <strong>Ctrl+C</strong> / <strong>⌘+C</strong></li>
+      <li>Click the button below to open Microsoft Forms</li>
+      <li>Enter your participant code <strong>${code}</strong> and paste your conversation</li>
+      <li>Submit the form, then return here</li>
+    </ol>
+    <a href="${MS_FORMS_URL}" target="_blank" rel="noopener" class="msforms-link" style="display:inline-flex;margin-bottom:16px;">
+      Open Prompt Submission Form ↗
+    </a>
+    <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
+    <h3 style="margin-bottom:8px;">Step 2 — Also paste your conversation below</h3>
+    <p style="font-size:.85rem;margin-bottom:10px;">This sends a backup copy directly to the research database.</p>
+    <textarea id="ctxt" style="width:100%;min-height:110px;font-family:'DM Mono',monospace;font-size:.77rem;padding:11px;border:1.5px solid var(--border);border-radius:8px;background:var(--cream);resize:vertical;outline:none;" placeholder="Paste your full ChatGPT conversation here..." oninput="chat=this.value"></textarea>
+    <div class="nbox" style="margin-top:9px;"><strong>After submitting both:</strong> Complete the <strong>Post-Test on Canvas</strong>.</div>`;
+  }
+  document.getElementById('subcard').innerHTML=subH;
+}
+
+// ═══════════════════════════════════════════════════════
+// GOOGLE SHEETS SUBMIT
+// ═══════════════════════════════════════════════════════
+async function submitGS(){
+  const btn=document.getElementById('gsbtn');
+  const btxt=document.getElementById('gsbtxt');
+  const spin=document.getElementById('gsspin');
+  const res=document.getElementById('gsres');
+  btn.disabled=true; btxt.style.display='none'; spin.style.display='block';
+  if(grp!=='control'){const ta=document.getElementById('ctxt');if(ta)chat=ta.value;}
+  const payload={
+    timestamp:new Date().toISOString(),
+    studentNum, code, group:grp,
+    q1:sc.q1, q2:sc.q2, q3:sc.q3, q4:sc.q4,
+    total:Object.values(sc).reduce((a,b)=>a+(b||0),0),
+    conversation:grp==='control'?'':chat
+  };
+  try{
+    await fetch(SHEETS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    spin.style.display='none'; res.style.display='block';
+    res.style.color='var(--ok)'; res.innerHTML='✓ Submitted. Redirecting...';
+    setTimeout(()=>go('s4'),1400);
+  } catch(e){
+    spin.style.display='none'; btxt.style.display='block'; btn.disabled=false;
+    res.style.display='block'; res.style.color='var(--no)';
+    res.innerHTML='⚠ Submission failed — tell your instructor and proceed to Canvas manually.';
+  }
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT (deploy separately as a Web App)
+  Paste this into a new Apps Script project, deploy as Web App,
+  set "Execute as: Me" and "Who has access: Anyone".
+  Then paste the deployment URL into SHEETS_URL above.
+
+function doPost(e) {
+  const ss = SpreadsheetApp.openById("YOUR_SPREADSHEET_ID");
+  const sheet = ss.getSheetByName("Responses") || ss.insertSheet("Responses");
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Timestamp","StudentNumber","Code","Group","Q1","Q2","Q3","Q4","Total","Conversation"]);
+  }
+  const d = JSON.parse(e.postData.contents);
+  sheet.appendRow([d.timestamp,d.studentNum,d.code,d.group,d.q1,d.q2,d.q3,d.q4,d.total,d.conversation]);
+  return ContentService.createTextOutput("OK");
+}
+═══════════════════════════════════════════════════════ -->
+
+</body>
+</html>
