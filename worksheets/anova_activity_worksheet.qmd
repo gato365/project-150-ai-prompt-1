@@ -1,0 +1,314 @@
+---
+title: "One-Way ANOVA Activity Worksheet"
+subtitle: "STAT 252 — Spring 2026 · Cal Poly SLO"
+format:
+  docx:
+    number-sections: false
+    toc: false
+    highlight-style: github
+execute:
+  echo: false
+---
+
+```{=openxml}
+<w:p><w:pPr><w:pStyle w:val="Normal"/></w:pPr>
+<w:r><w:t xml:space="preserve"> </w:t></w:r></w:p>
+```
+
+---
+
+## Student Information
+
+| Field | Response |
+|:------|:---------|
+| **Name** | ________________________________ |
+| **Student ID** | ________________________________ |
+| **Section / Time** | ________________________________ |
+| **Participant Code** | ________________________________ |
+| **Date** | ________________________________ |
+
+---
+
+\newpage
+
+## Part 1 — Context and Research Question
+
+### Background
+
+Researchers in education often want to know whether different instructional or study methods lead to different learning outcomes. To test this rigorously, we need a statistical method that can compare the *means* of three or more groups simultaneously while accounting for natural variation among individuals.
+
+**One-Way ANOVA** (Analysis of Variance) is the appropriate method when:
+
+- The **explanatory variable** is categorical with two or more levels (groups)
+- The **response variable** is quantitative (numeric)
+- Observations are independent across and within groups
+- Within-group variances are roughly equal across groups
+
+### Research Question
+
+A researcher wants to know whether **mean exam scores** differ significantly across **three different teaching methods** (Method A, Method B, and Method C). After randomly assigning 75 students (25 per group) to one of the three methods, all students completed the same standardized exam (scored 0–100).
+
+**1.** State the research question in your own words:
+
+> *Does the _________________________ differ significantly across the three _________________________?*
+
+---
+
+## Part 2 — Identifying Variables
+
+**2.** Identify the **explanatory variable**:
+
+| | |
+|:---|:---|
+| **Name of variable** | ________________________________ |
+| **Type** | ☐ Categorical  ☐ Quantitative |
+| **Number of levels (groups)** | ________________________________ |
+| **Names of the levels** | ________________________________ |
+
+**3.** Identify the **response variable**:
+
+| | |
+|:---|:---|
+| **Name of variable** | ________________________________ |
+| **Type** | ☐ Categorical  ☐ Quantitative |
+| **Measurement scale / units** | ________________________________ |
+
+**4.** In this study, which variable is being *explained* and which variable does the *explaining*?
+
+> The **response** variable is _________________________ because it is the outcome we are trying to explain.
+>
+> The **explanatory** variable is _________________________ because it defines the groups we are comparing.
+
+---
+
+## Part 3 — Conceptual Understanding
+
+### Within-Group Variability (The Noise)
+
+Within-group variability measures how spread out individual scores are **around their own group mean (ȳᵢ)**. It exists even when all members of a group received the exact same treatment — it is simply natural variation among individuals.
+
+**5.** Define within-group variability in your own words:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**6.** Fill in the blanks:
+
+> Large within-group variability means that individuals within the same group are very **_________________________** from each other.
+>
+> In ANOVA, within-group variability is called the **_________________________** (noise / signal) because it makes it **_________________________** (harder / easier) to detect real group differences.
+>
+> Within-group variability is the **_________________________** (numerator / denominator) of the F-ratio.
+
+**7.** In the dot plot below *(sketch or describe what you see on the slides)*, the scores within each group are:
+
+> ☐ Tightly clustered  ☐ Widely spread
+
+This represents **_________________________** within-group variability.
+
+---
+
+### Between-Group Variability (The Signal)
+
+Between-group variability measures how far apart the **group means (ȳᵢ)** are from the **grand mean (ȳ̄)** — the overall average across all observations. This is the *signal* that ANOVA is designed to detect.
+
+**8.** Define between-group variability in your own words:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**9.** Fill in the blanks:
+
+> Large between-group variability means the group means (ȳᵢ) are far from the **_________________________** (ȳ̄).
+>
+> In ANOVA, between-group variability is the **_________________________** (noise / signal) and is the **_________________________** (numerator / denominator) of the F-ratio.
+
+**10.** Suppose the three group means are ȳ_A = 72, ȳ_B = 85, ȳ_C = 91, and the grand mean is ȳ̄ = 82.7.
+
+> Which group mean is farthest from the grand mean? **_________________________**
+>
+> Does this suggest large or small between-group variability? **_________________________**
+
+---
+
+## Part 4 — The F-Ratio and Test Statistic
+
+The **F-statistic** (test statistic for One-Way ANOVA) is the ratio of between-group variability to within-group variability:
+
+$$F = \frac{\text{Between-Group Variability (Signal)}}{\text{Within-Group Variability (Noise)}} = \frac{MS_{Between}}{MS_{Within}}$$
+
+**11.** Complete the formula using words:
+
+> $$F = \frac{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}{\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_}$$
+
+**12.** Interpret the following F values:
+
+| F value | What it tells us about the data |
+|:--------|:--------------------------------|
+| F = 12.4 | ________________________________ |
+| F ≈ 1.0  | ________________________________ |
+| F = −2.1 | ________________________________ *(Note: Is this possible? Why or why not?)* |
+
+**13.** Fill in the blanks:
+
+> A **large** F-statistic means between-group differences are **_________________________** relative to within-group noise — this is **_________________________** (strong / weak) evidence that group means differ.
+>
+> A **small** F-statistic (≈ 1) means group differences are about the same size as **_________________________** — little evidence the groups truly differ.
+
+**14.** The F-statistic is always ≥ 0. Explain why in one sentence:
+
+> _____________________________________________________________________________
+
+---
+
+## Part 5 — The p-value
+
+The **p-value** tells us how likely it is to observe an F-statistic as large as (or larger than) the one we calculated, **assuming the null hypothesis is true** (i.e., all group means are equal).
+
+$$H_0: \mu_A = \mu_B = \mu_C \quad \text{(no difference in group means)}$$
+$$H_a: \text{At least one group mean is different}$$
+
+**15.** Fill in the blanks:
+
+> A **small p-value** (e.g., p = 0.003) means it is very **_________________________** (likely / unlikely) to observe this data if H₀ were true.
+>
+> This provides **_________________________** (strong / weak) evidence **_________________________** (for / against) H₀, supporting a causal claim that teaching method **_________________________** student exam scores.
+>
+> A **large p-value** (e.g., p = 0.42) means the observed differences could easily be explained by **_________________________** alone.
+
+**16.** Causal language check — replace "prove" with appropriate language:
+
+> ❌ *"An F = 8.47 with p = 0.003 proves that teaching method causes differences in exam scores."*
+>
+> ✅ *"An F = 8.47 with p = 0.003 _________________________ a causal claim that teaching method _________________________ exam scores."*
+
+*(Use phrases like "provides evidence for," "supports," or "gives us reason to believe")*
+
+---
+
+## Part 6 — Interpreting Results
+
+**Suppose the ANOVA output is:**
+
+| Source | df | SS | MS | F | p-value |
+|:-------|:---|:---|:---|:---|:--------|
+| Between Groups | 2 | 1,234 | 617 | 8.47 | 0.003 |
+| Within Groups | 72 | 5,246 | 72.9 | | |
+| **Total** | **74** | **6,480** | | | |
+
+**17.** What is the value of the test statistic?  **F = _______**
+
+**18.** Interpret the test statistic in context:
+
+> The F-statistic of _______ means the between-group variability is approximately _______ times larger than the within-group variability. This is **_________________________** (consistent / inconsistent) with there being real differences among teaching methods.
+
+**19.** What is the p-value?  **p = _______**
+
+**20.** Interpret the p-value in context:
+
+> If all three teaching methods produced identical mean exam scores (H₀ true), there would be only a _______ % chance of observing an F-statistic this large or larger by random chance alone.
+
+**21.** Make a statistical decision (circle or fill in):
+
+> Since p = 0.003 is **_________________________** (less than / greater than) α = 0.05,
+>
+> we **_________________________** (reject / fail to reject) H₀.
+
+**22.** Write a conclusion in context using causally appropriate language:
+
+> We have **_________________________** evidence to _________________________ the claim that teaching method affects mean exam scores. Specifically, the data _________________________ that at least one teaching method produces a different mean exam score than the others (F = 8.47, p = 0.003).
+
+---
+
+## Part 7 — Connecting to ANOVA Concepts
+
+**23.** The F-statistic **increases** when (check all that apply):
+
+> ☐ Between-group variability increases (group means move farther apart)
+> ☐ Within-group variability decreases (individuals become more similar within groups)
+> ☐ Sample size increases
+> ☐ All of the above
+
+**24.** The p-value **decreases** (becomes more significant) when:
+
+> ☐ The F-statistic is larger
+> ☐ Sample sizes are larger
+> ☐ Both of the above
+
+**25.** The equal variance condition (homoscedasticity) requires:
+
+> The **_________________________** (spread / center) of scores within each group should be **_________________________** across all groups.
+>
+> A rough check: the largest group standard deviation should be no more than approximately **_______×** the smallest.
+
+**26.** In one sentence, explain what "statistical evidence" means in the context of ANOVA:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+---
+
+## Part 8 — AI Interaction Log *(For AI Treatment Groups Only)*
+
+*Control group students: skip to Part 9.*
+
+### Your Prompts and Key Takeaways
+
+**Prompt 1** *(paste or summarize your first AI prompt)*:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**Key concept you learned or clarified from the response:**
+
+> _____________________________________________________________________________
+
+**Prompt 2** *(paste or summarize)*:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**Key concept you learned or clarified:**
+
+> _____________________________________________________________________________
+
+**Prompt 3** *(if applicable)*:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**Key concept you learned or clarified:**
+
+> _____________________________________________________________________________
+
+---
+
+## Part 9 — Reflection
+
+**27.** Which concept was most challenging for you today? Why?
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**28.** In your own words, explain how between-group variability and within-group variability work **together** in the F-ratio to help us make decisions:
+
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+>
+> _____________________________________________________________________________
+
+**29.** Without looking at your notes, complete this sentence:
+
+> *One-Way ANOVA tests whether the _________________________ of _________________________ or more groups are significantly different, by comparing _________________________ variability (signal) to _________________________ variability (noise) using the _________________________ statistic.*
+
+---
+
+*Submit this worksheet to your instructor at the end of class along with your Canvas Post-Test.*

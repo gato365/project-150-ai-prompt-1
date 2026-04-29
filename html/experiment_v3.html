@@ -154,6 +154,14 @@
   .spin{display:none;width:19px;height:19px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:rot .7s linear infinite;margin:0 auto}
   @keyframes rot{to{transform:rotate(360deg)}}
 
+  /* fill-in-the-blank inputs */
+  .fill-blank{display:inline-block;border:none;border-bottom:2.5px solid var(--gold);background:transparent;font-family:'DM Mono',monospace;font-size:.87rem;color:var(--ink);padding:2px 6px;min-width:130px;outline:none;text-align:center;vertical-align:bottom;margin:0 3px;transition:border-color .2s}
+  .fill-blank:focus{border-bottom-color:var(--green)}
+  .fill-wrap{margin:16px 0;padding:15px 18px;background:var(--pt-bg);border:1.5px solid var(--pt-bd);border-radius:10px;font-size:.91rem;line-height:2.4;color:#4a3800}
+  .fill-wrap .fill-lbl{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pt);margin-bottom:9px;display:block}
+  .fill-wrap p{margin-bottom:4px;color:#4a3800}
+  .fill-wrap p:last-child{margin-bottom:0}
+
   @media(max-width:600px){
     header{padding:14px 18px} main{padding:24px 12px 60px} .card{padding:20px 16px}
     input[type=text]{font-size:1.2rem;width:138px} .dpair{flex-direction:column}
@@ -186,7 +194,7 @@
     </div>
     <div class="err" id="cerr">Code not recognized — check with your instructor.</div>
   </div>
-  <div class="nbox"><strong>Before you start:</strong> Log into <strong>CSU ChatGPT</strong> at <code>chat.calstate.edu</code> in a separate tab. Raise your hand if you need help.</div>
+  <div class="nbox"><strong>Before you start:</strong> Have your <strong>4-digit participant code</strong> ready — your instructor provided it. After entering your code, you will receive specific instructions for your assigned method, including any links you need.</div>
 </div>
 
 <!-- ════════════════════════════════════ SEC 1: TEACH ════ -->
@@ -201,7 +209,7 @@
     <!-- T1 -->
     <div class="tslide active" id="t1">
       <div class="stitle">1 / 6 — Why Does ANOVA Compare Two Types of Variability?</div>
-      <p>Imagine a researcher tests three different study methods on student exam scores. She finds group averages of 72, 85, and 91. But does that <em>prove</em> the methods work differently — or could random chance explain those differences?</p>
+      <p>Imagine a researcher tests three different study methods on student exam scores. She finds group averages of 72, 85, and 91. But does that <em>provide evidence</em> the methods work differently — or could random chance explain those differences?</p>
       <div class="cbox"><strong>One-Way ANOVA answers:</strong> Are the differences between group means large enough — relative to the natural variation <em>within</em> groups — to count as real evidence?</div>
       <p>To answer that, ANOVA splits all the variability in the data into two buckets:</p>
       <ul style="padding-left:20px;line-height:2.2;font-size:.92rem;">
@@ -215,151 +223,312 @@
     <!-- T2 -->
     <div class="tslide" id="t2">
       <div class="stitle">2 / 6 — Within-Group Variability: The Noise</div>
-      <div class="cbox"><strong>Within-group variability</strong> measures how spread out individual scores are <em>around their own group mean</em>. It is the <strong>noise</strong> — variation that exists even when all group members received the same treatment.</div>
-      <p>The dot-plot below shows three groups (A, B, C) where scores are highly variable <em>within</em> each group. The dashed vertical lines mark group means — notice they cluster near the center, so there is little signal but a lot of noise.</p>
+      <div class="cbox"><strong>Within-group variability</strong> measures how spread out individual scores are <em>around their own group mean (ȳᵢ)</em>. It is the <strong>noise</strong> — variation that exists even when all group members received the same treatment.</div>
+      <p>The strip plot below shows three groups (A, B, C). The <strong>y-axis</strong> is the response variable (Exam Score). Scores are highly variable <em>within</em> each group — the dashed lines mark group means (ȳᵢ) — notice they cluster near the center, so there is little signal but a lot of noise.</p>
       <div class="vwrap">
-        <svg viewBox="0 0 430 165" xmlns="http://www.w3.org/2000/svg">
-          <line x1="44" y1="152" x2="418" y2="152" stroke="#ccc" stroke-width="1.5"/>
-          <text x="44" y="162" font-size="9" fill="#999" font-family="monospace">Low</text>
-          <text x="415" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="end">High</text>
-          <text x="231" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="middle">Score →</text>
-          <!-- A -->
-          <text x="38" y="34" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="700">A</text>
-          <circle cx="57"  cy="29" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="100" cy="33" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="152" cy="26" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="208" cy="31" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="268" cy="27" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="322" cy="30" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="380" cy="28" r="7" fill="#2d6a4f" opacity=".76"/>
-          <line x1="227" y1="13" x2="227" y2="47" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <!-- B -->
-          <text x="38" y="84" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="700">B</text>
-          <circle cx="64"  cy="79" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="108" cy="74" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="158" cy="81" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="213" cy="76" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="262" cy="80" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="311" cy="75" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="368" cy="79" r="7" fill="#1a4e8c" opacity=".76"/>
-          <line x1="212" y1="62" x2="212" y2="98" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <!-- C -->
-          <text x="38" y="134" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="700">C</text>
-          <circle cx="54"  cy="129" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="102" cy="133" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="160" cy="126" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="218" cy="131" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="274" cy="127" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="330" cy="132" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="385" cy="129" r="7" fill="#b5451b" opacity=".76"/>
-          <line x1="218" y1="113" x2="218" y2="147" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <!-- bracket -->
-          <line x1="212" y1="6" x2="227" y2="6" stroke="#555" stroke-width="1.5"/>
-          <line x1="212" y1="3" x2="212" y2="10" stroke="#555" stroke-width="1.5"/>
-          <line x1="227" y1="3" x2="227" y2="10" stroke="#555" stroke-width="1.5"/>
-          <text x="219" y="2" font-size="8.5" fill="#555" font-family="monospace" text-anchor="middle">means are close</text>
+        <svg viewBox="0 0 440 210" xmlns="http://www.w3.org/2000/svg">
+          <!-- Y-axis -->
+          <line x1="60" y1="15" x2="60" y2="175" stroke="#bbb" stroke-width="1.5"/>
+          <!-- X-axis -->
+          <line x1="60" y1="175" x2="425" y2="175" stroke="#bbb" stroke-width="1.5"/>
+          <!-- Y-axis label (rotated) -->
+          <text x="14" y="95" font-size="8.5" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,14,95)">Score (Response Variable)</text>
+          <!-- Y-axis ticks: y = 175 - 1.6*score -->
+          <line x1="55" y1="175" x2="60" y2="175" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="178" font-size="8" fill="#999" font-family="monospace" text-anchor="end">0</text>
+          <line x1="55" y1="135" x2="60" y2="135" stroke="#eee" stroke-width="1"/>
+          <line x1="55" y1="135" x2="60" y2="135" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="138" font-size="8" fill="#999" font-family="monospace" text-anchor="end">25</text>
+          <line x1="55" y1="95" x2="60" y2="95" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="98" font-size="8" fill="#999" font-family="monospace" text-anchor="end">50</text>
+          <line x1="55" y1="55" x2="60" y2="55" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="58" font-size="8" fill="#999" font-family="monospace" text-anchor="end">75</text>
+          <line x1="55" y1="15" x2="60" y2="15" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="18" font-size="8" fill="#999" font-family="monospace" text-anchor="end">100</text>
+          <!-- Horizontal grid lines -->
+          <line x1="60" y1="135" x2="425" y2="135" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="95" x2="425" y2="95" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="55" x2="425" y2="55" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="15" x2="425" y2="15" stroke="#f0ede8" stroke-width="1"/>
+          <!-- X-axis group labels -->
+          <text x="140" y="192" font-size="12" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+          <text x="242" y="192" font-size="12" fill="#1a4e8c" font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+          <text x="344" y="192" font-size="12" fill="#b5451b" font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+          <text x="242" y="207" font-size="8" fill="#888" font-family="monospace" text-anchor="middle">Group (Explanatory Variable)</text>
+          <!-- Group A (green) — scores: 18,32,48,62,77,88,95 → y: 146,124,98,76,52,34,23 -->
+          <circle cx="130" cy="146" r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="140" cy="124" r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="126" cy="98"  r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="148" cy="76"  r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="132" cy="52"  r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="144" cy="34"  r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <circle cx="152" cy="23"  r="6.5" fill="#2d6a4f" opacity=".76"/>
+          <!-- A mean line at score≈60 → y=79; label ȳ_A -->
+          <line x1="116" y1="79" x2="162" y2="79" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="165" y="83" font-size="9" fill="#2d6a4f" font-family="monospace">ȳ<tspan dy="3" font-size="7">A</tspan></text>
+          <!-- Group B (blue) — scores: 20,35,50,65,80,90,92 → y: 143,119,95,71,47,31,28 -->
+          <circle cx="230" cy="143" r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="242" cy="119" r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="226" cy="95"  r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="250" cy="71"  r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="236" cy="47"  r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="246" cy="31"  r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <circle cx="222" cy="28"  r="6.5" fill="#1a4e8c" opacity=".76"/>
+          <!-- B mean at score≈62 → y=76; label ȳ_B -->
+          <line x1="216" y1="76" x2="262" y2="76" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="265" y="80" font-size="9" fill="#1a4e8c" font-family="monospace">ȳ<tspan dy="3" font-size="7">B</tspan></text>
+          <!-- Group C (red) — scores: 22,38,52,65,77,87,94 → y: 140,114,92,71,52,36,25 -->
+          <circle cx="332" cy="140" r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="344" cy="114" r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="328" cy="92"  r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="352" cy="71"  r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="336" cy="52"  r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="347" cy="36"  r="6.5" fill="#b5451b" opacity=".76"/>
+          <circle cx="322" cy="25"  r="6.5" fill="#b5451b" opacity=".76"/>
+          <!-- C mean at score≈60 → y=79; label ȳ_C -->
+          <line x1="316" y1="79" x2="362" y2="79" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="365" y="83" font-size="9" fill="#b5451b" font-family="monospace">ȳ<tspan dy="3" font-size="7">C</tspan></text>
+          <!-- Annotation: means are close together -->
+          <line x1="178" y1="76" x2="213" y2="76" stroke="#666" stroke-width="1.2" stroke-dasharray="3,2"/>
+          <text x="195" y="68" font-size="7.5" fill="#666" font-family="monospace" text-anchor="middle">means cluster here</text>
+          <text x="195" y="91" font-size="7.5" fill="#666" font-family="monospace" text-anchor="middle">↑ low signal</text>
         </svg>
-        <p class="vcap">High within-group spread — each group spans nearly the full range. Group means (dashed lines) cluster near the center.</p>
+        <p class="vcap">High within-group spread — each group spans nearly the full score range. Group means ȳᵢ (dashed lines) cluster near the center, indicating little between-group signal.</p>
       </div>
-      <div class="cbox"><strong>Key idea:</strong> Large within-group variability = individuals in the same group are very different from each other. This is the <em>noise</em> in ANOVA — it makes it harder to detect real group differences.</div>
+      <div class="cbox"><strong>Key idea:</strong> Large within-group variability = individuals in the same group have very <em>different</em> scores from each other. This is the <em>noise</em> in ANOVA — it makes it harder to detect real group differences.</div>
+      <div class="fill-wrap">
+        <span class="fill-lbl">Fill in the blanks — check your understanding:</span>
+        <p>Large within-group variability means observations in the same group are very
+          <input type="text" class="fill-blank" placeholder="one word…">
+          from each other.</p>
+        <p>In ANOVA, this is called the
+          <input type="text" class="fill-blank" placeholder="noise or signal?">
+          because large spread makes it
+          <input type="text" class="fill-blank" placeholder="harder or easier?">
+          to detect real group differences.</p>
+        <p>Within-group variability is the
+          <input type="text" class="fill-blank" placeholder="numerator or denominator?">
+          of the F-ratio.</p>
+      </div>
       <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">2 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
     </div>
 
     <!-- T3 -->
     <div class="tslide" id="t3">
       <div class="stitle">3 / 6 — Between-Group Variability: The Signal</div>
-      <div class="cbox"><strong>Between-group variability</strong> measures how far apart the <em>group means</em> are from the <strong>grand mean</strong> (overall average of all observations). It is the <strong>signal</strong> — evidence that groups actually differ.</div>
-      <p>Here the same three groups have <em>tight</em> within-group spread but <em>separated</em> means. The gray dashed vertical line is the grand mean. Arrows show each group mean's deviation from it — that is between-group variability.</p>
+      <div class="cbox"><strong>Between-group variability</strong> measures how far apart the <em>group means (ȳᵢ)</em> are from the <strong>grand mean (ȳ̄)</strong> — the overall average across all observations. It is the <strong>signal</strong> — evidence that groups actually differ.</div>
+      <p>The same three groups now have <em>tight</em> within-group spread but <em>separated</em> means. The gray dashed horizontal line marks the grand mean <strong>ȳ̄</strong>. Arrows show each group mean's deviation from ȳ̄ — that is between-group variability.</p>
       <div class="vwrap">
-        <svg viewBox="0 0 430 165" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 440 210" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <marker id="ag" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2d6a4f"/></marker>
-            <marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b5451b"/></marker>
+            <marker id="agv" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2d6a4f"/></marker>
+            <marker id="arv" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b5451b"/></marker>
           </defs>
-          <line x1="44" y1="152" x2="418" y2="152" stroke="#ccc" stroke-width="1.5"/>
-          <text x="44" y="162" font-size="9" fill="#999" font-family="monospace">Low</text>
-          <text x="415" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="end">High</text>
-          <text x="231" y="162" font-size="9" fill="#999" font-family="monospace" text-anchor="middle">Score →</text>
-          <!-- grand mean -->
-          <line x1="218" y1="6" x2="218" y2="150" stroke="#bbb" stroke-width="1.5" stroke-dasharray="3,4"/>
-          <text x="222" y="16" font-size="8.5" fill="#888" font-family="monospace">grand mean x̄</text>
-          <!-- A tight left ~x=92 -->
-          <text x="38" y="34" font-size="11" fill="#2d6a4f" font-family="monospace" text-anchor="end" font-weight="700">A</text>
-          <circle cx="74"  cy="28" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="85"  cy="31" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="96"  cy="26" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="106" cy="30" r="7" fill="#2d6a4f" opacity=".76"/>
-          <circle cx="116" cy="27" r="7" fill="#2d6a4f" opacity=".76"/>
-          <line x1="95" y1="12" x2="95" y2="47" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <line x1="97" y1="8" x2="215" y2="8" stroke="#2d6a4f" stroke-width="1.4" marker-end="url(#ag)"/>
-          <text x="154" y="6" font-size="8" fill="#2d6a4f" font-family="monospace" text-anchor="middle">between →</text>
-          <!-- B tight center ~x=218 -->
-          <text x="38" y="84" font-size="11" fill="#1a4e8c" font-family="monospace" text-anchor="end" font-weight="700">B</text>
-          <circle cx="202" cy="78" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="213" cy="75" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="223" cy="80" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="232" cy="76" r="7" fill="#1a4e8c" opacity=".76"/>
-          <circle cx="241" cy="79" r="7" fill="#1a4e8c" opacity=".76"/>
-          <line x1="222" y1="62" x2="222" y2="96" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <!-- C tight right ~x=345 -->
-          <text x="38" y="134" font-size="11" fill="#b5451b" font-family="monospace" text-anchor="end" font-weight="700">C</text>
-          <circle cx="324" cy="128" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="335" cy="131" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="346" cy="126" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="356" cy="130" r="7" fill="#b5451b" opacity=".76"/>
-          <circle cx="366" cy="127" r="7" fill="#b5451b" opacity=".76"/>
-          <line x1="345" y1="112" x2="345" y2="147" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
-          <line x1="220" y1="144" x2="342" y2="144" stroke="#b5451b" stroke-width="1.4" marker-end="url(#ar)"/>
-          <text x="279" y="142" font-size="8" fill="#b5451b" font-family="monospace" text-anchor="middle">← between</text>
+          <!-- Y-axis -->
+          <line x1="60" y1="15" x2="60" y2="175" stroke="#bbb" stroke-width="1.5"/>
+          <!-- X-axis -->
+          <line x1="60" y1="175" x2="425" y2="175" stroke="#bbb" stroke-width="1.5"/>
+          <!-- Y-axis label -->
+          <text x="14" y="95" font-size="8.5" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,14,95)">Score (Response Variable)</text>
+          <!-- Y-axis ticks: y = 175 - 1.6*score -->
+          <line x1="55" y1="175" x2="60" y2="175" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="178" font-size="8" fill="#999" font-family="monospace" text-anchor="end">0</text>
+          <line x1="55" y1="135" x2="60" y2="135" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="138" font-size="8" fill="#999" font-family="monospace" text-anchor="end">25</text>
+          <line x1="55" y1="95" x2="60" y2="95" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="98" font-size="8" fill="#999" font-family="monospace" text-anchor="end">50</text>
+          <line x1="55" y1="55" x2="60" y2="55" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="58" font-size="8" fill="#999" font-family="monospace" text-anchor="end">75</text>
+          <line x1="55" y1="15" x2="60" y2="15" stroke="#bbb" stroke-width="1"/>
+          <text x="50" y="18" font-size="8" fill="#999" font-family="monospace" text-anchor="end">100</text>
+          <!-- Horizontal grid lines -->
+          <line x1="60" y1="135" x2="425" y2="135" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="95" x2="425" y2="95" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="55" x2="425" y2="55" stroke="#f0ede8" stroke-width="1"/>
+          <line x1="60" y1="15" x2="425" y2="15" stroke="#f0ede8" stroke-width="1"/>
+          <!-- X-axis group labels -->
+          <text x="140" y="192" font-size="12" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+          <text x="242" y="192" font-size="12" fill="#1a4e8c" font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+          <text x="344" y="192" font-size="12" fill="#b5451b" font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+          <text x="242" y="207" font-size="8" fill="#888" font-family="monospace" text-anchor="middle">Group (Explanatory Variable)</text>
+          <!-- Grand mean line: score≈62 → y = 175-99 = 76; dashed gray -->
+          <line x1="60" y1="76" x2="420" y2="76" stroke="#999" stroke-width="1.8" stroke-dasharray="6,4"/>
+          <text x="422" y="73" font-size="9" fill="#777" font-family="monospace">ȳ̄</text>
+          <text x="422" y="84" font-size="7.5" fill="#777" font-family="monospace">(grand)</text>
+          <!-- Group A (green): tight around score=30 → y=127; dots 27-33 -->
+          <!-- y = 175-1.6*score: score27→132, 29→129, 31→125, 28→131, 30→127, 32→124 -->
+          <circle cx="128" cy="132" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <circle cx="136" cy="129" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <circle cx="146" cy="125" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <circle cx="124" cy="131" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <circle cx="140" cy="127" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <circle cx="150" cy="124" r="6.5" fill="#2d6a4f" opacity=".82"/>
+          <!-- A mean line at score=30 → y=127; label ȳ_A -->
+          <line x1="114" y1="127" x2="164" y2="127" stroke="#2d6a4f" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="167" y="131" font-size="9" fill="#2d6a4f" font-family="monospace">ȳ<tspan dy="3" font-size="7">A</tspan></text>
+          <!-- Arrow from A mean (y=127) up to grand mean (y=76): between distance -->
+          <line x1="140" y1="123" x2="140" y2="80" stroke="#2d6a4f" stroke-width="1.5" marker-end="url(#agv)" transform="rotate(180,140,101)"/>
+          <text x="100" y="104" font-size="7.5" fill="#2d6a4f" font-family="monospace">between ↑</text>
+          <!-- Group B (blue): tight around score=65 → y=71; dots 63-67 -->
+          <!-- y: 63→75, 64→73, 66→70, 63→75, 65→71, 67→68 -->
+          <circle cx="230" cy="75" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <circle cx="238" cy="73" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <circle cx="248" cy="70" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <circle cx="226" cy="75" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <circle cx="242" cy="71" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <circle cx="252" cy="68" r="6.5" fill="#1a4e8c" opacity=".82"/>
+          <!-- B mean at score=65 → y=71; label ȳ_B (close to grand mean) -->
+          <line x1="216" y1="71" x2="266" y2="71" stroke="#1a4e8c" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="269" y="75" font-size="9" fill="#1a4e8c" font-family="monospace">ȳ<tspan dy="3" font-size="7">B</tspan></text>
+          <!-- Group C (red): tight around score=90 → y=31; dots 87-93 -->
+          <!-- y: 87→36, 89→33, 91→29, 88→35, 90→31, 92→28 -->
+          <circle cx="332" cy="36" r="6.5" fill="#b5451b" opacity=".82"/>
+          <circle cx="340" cy="33" r="6.5" fill="#b5451b" opacity=".82"/>
+          <circle cx="350" cy="29" r="6.5" fill="#b5451b" opacity=".82"/>
+          <circle cx="328" cy="35" r="6.5" fill="#b5451b" opacity=".82"/>
+          <circle cx="344" cy="31" r="6.5" fill="#b5451b" opacity=".82"/>
+          <circle cx="354" cy="28" r="6.5" fill="#b5451b" opacity=".82"/>
+          <!-- C mean at score=90 → y=31; label ȳ_C -->
+          <line x1="318" y1="31" x2="368" y2="31" stroke="#b5451b" stroke-width="2.5" stroke-dasharray="5,3"/>
+          <text x="371" y="35" font-size="9" fill="#b5451b" font-family="monospace">ȳ<tspan dy="3" font-size="7">C</tspan></text>
+          <!-- Arrow from C mean (y=31) down to grand mean (y=76) -->
+          <line x1="344" y1="35" x2="344" y2="72" stroke="#b5451b" stroke-width="1.5" marker-end="url(#arv)"/>
+          <text x="358" y="56" font-size="7.5" fill="#b5451b" font-family="monospace">between ↓</text>
         </svg>
-        <p class="vcap">Tight clusters + widely separated group means = strong between-group signal. Arrows show deviation from the grand mean.</p>
+        <p class="vcap">Tight clusters + widely separated group means ȳᵢ = strong between-group signal. Arrows show deviation of each ȳᵢ from the grand mean ȳ̄ (dashed line).</p>
       </div>
-      <div class="cbox"><strong>Key idea:</strong> Large between-group variability = group means are far from the grand mean — strong evidence that groups genuinely differ. This is the <em>signal</em> ANOVA detects.</div>
+      <div class="cbox"><strong>Key idea:</strong> Large between-group variability = group means (ȳᵢ) are far from the grand mean (ȳ̄) — strong evidence to <em>support a causal claim</em> that groups genuinely differ. This is the <em>signal</em> ANOVA detects.</div>
       <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">3 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
     </div>
 
     <!-- T4 -->
     <div class="tslide" id="t4">
-      <div class="stitle">4 / 6 — The F-Ratio: Signal / Noise</div>
+      <div class="stitle">4 / 6 — The F-Ratio, Test Statistic &amp; p-value</div>
       <div class="fbox">
-        <div class="fform">F = Between / Within</div>
-        <div class="fsub">Mean Square Between ÷ Mean Square Within</div>
+        <div class="fform">F = Between-Group Variability / Within-Group Variability</div>
+        <div class="fsub">Test Statistic = MS<sub>Between</sub> ÷ MS<sub>Within</sub> &nbsp;·&nbsp; Signal ÷ Noise</div>
       </div>
-      <p>The F-statistic is a ratio of the two variabilities. The two dot-plots contrast a <strong>high-F</strong> scenario (clear group differences) with a <strong>low-F</strong> scenario (differences lost in noise).</p>
+      <p>The strip plots below contrast a <strong>high-F</strong> scenario (clear group differences, tight clusters) with a <strong>low-F</strong> scenario (differences lost in noise). The <strong>y-axis</strong> is the response variable (Exam Score).</p>
       <div class="dpair">
+        <!-- High F plot: tight clusters, separated means -->
         <div class="vwrap">
-          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
-            <text x="118" y="13" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">High F — Clear Signal</text>
-            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
-            <circle cx="46" cy="43" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="54" cy="47" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="62" cy="41" r="6" fill="#2d6a4f" opacity=".8"/><circle cx="70" cy="45" r="6" fill="#2d6a4f" opacity=".8"/>
-            <line x1="58" y1="29" x2="58" y2="59" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
-            <circle cx="105" cy="82" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="113" cy="78" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="121" cy="83" r="6" fill="#1a4e8c" opacity=".8"/><circle cx="129" cy="79" r="6" fill="#1a4e8c" opacity=".8"/>
-            <line x1="117" y1="66" x2="117" y2="96" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
-            <circle cx="164" cy="120" r="6" fill="#b5451b" opacity=".8"/><circle cx="172" cy="116" r="6" fill="#b5451b" opacity=".8"/><circle cx="180" cy="121" r="6" fill="#b5451b" opacity=".8"/><circle cx="188" cy="117" r="6" fill="#b5451b" opacity=".8"/>
-            <line x1="176" y1="104" x2="176" y2="130" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+          <svg viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg">
+            <text x="110" y="13" font-size="9.5" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">High F — Clear Signal</text>
+            <!-- Axes: y=20 (score=100) to y=165 (score=0); x=30 to x=210 -->
+            <!-- y = 165 - 1.45*score -->
+            <line x1="30" y1="20" x2="30" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <line x1="30" y1="165" x2="212" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <text x="24" y="168" font-size="7" fill="#999" font-family="monospace" text-anchor="end">0</text>
+            <text x="24" y="92" font-size="7" fill="#999" font-family="monospace" text-anchor="end">50</text>
+            <text x="24" y="23" font-size="7" fill="#999" font-family="monospace" text-anchor="end">100</text>
+            <line x1="27" y1="92" x2="30" y2="92" stroke="#bbb" stroke-width="1"/>
+            <line x1="27" y1="20" x2="30" y2="20" stroke="#bbb" stroke-width="1"/>
+            <text x="10" y="95" font-size="7" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,95)">Score</text>
+            <!-- Group labels -->
+            <text x="72" y="178" font-size="10" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+            <text x="120" y="178" font-size="10" fill="#1a4e8c" font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+            <text x="168" y="178" font-size="10" fill="#b5451b" font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+            <!-- A: scores 27-33, tight around 30 → y≈122 -->
+            <!-- y = 165-1.45*score: 27→126, 30→122, 33→117, 28→125, 31→120 -->
+            <circle cx="65"  cy="126" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="73"  cy="122" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="80"  cy="117" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="62"  cy="125" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="76"  cy="120" r="6" fill="#2d6a4f" opacity=".82"/>
+            <!-- A mean at y≈122; label ȳ_A -->
+            <line x1="55" y1="122" x2="88" y2="122" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="90" y="125" font-size="7.5" fill="#2d6a4f" font-family="monospace">ȳ<tspan dy="2" font-size="6">A</tspan></text>
+            <!-- B: scores 62-68, tight around 65 → y≈71 -->
+            <!-- y: 62→75, 65→71, 68→66, 63→74, 66→69 -->
+            <circle cx="113" cy="75" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="121" cy="71" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="128" cy="66" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="110" cy="74" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="124" cy="69" r="6" fill="#1a4e8c" opacity=".82"/>
+            <!-- B mean at y≈71; label ȳ_B -->
+            <line x1="103" y1="71" x2="136" y2="71" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="138" y="74" font-size="7.5" fill="#1a4e8c" font-family="monospace">ȳ<tspan dy="2" font-size="6">B</tspan></text>
+            <!-- C: scores 87-93, tight around 90 → y≈35 -->
+            <!-- y: 87→39, 90→35, 93→30, 88→37, 91→33 -->
+            <circle cx="161" cy="39" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="169" cy="35" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="176" cy="30" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="158" cy="37" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="172" cy="33" r="6" fill="#b5451b" opacity=".82"/>
+            <!-- C mean at y≈35; label ȳ_C -->
+            <line x1="151" y1="35" x2="184" y2="35" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="186" y="38" font-size="7.5" fill="#b5451b" font-family="monospace">ȳ<tspan dy="2" font-size="6">C</tspan></text>
           </svg>
-          <p class="vcap">Separated + tight clusters → F >> 1</p>
+          <p class="vcap">Separated means ȳᵢ + tight clusters → F >> 1 → small p-value</p>
         </div>
+        <!-- Low F plot: wide spread, overlapping, similar means -->
         <div class="vwrap">
-          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
-            <text x="118" y="13" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Low F — Noise Wins</text>
-            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
-            <circle cx="30" cy="43" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="66" cy="47" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="105" cy="41" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="145" cy="45" r="6" fill="#2d6a4f" opacity=".75"/><circle cx="186" cy="42" r="6" fill="#2d6a4f" opacity=".75"/>
-            <line x1="107" y1="29" x2="107" y2="59" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
-            <circle cx="38" cy="82" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="76" cy="77" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="114" cy="82" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="155" cy="78" r="6" fill="#1a4e8c" opacity=".75"/><circle cx="196" cy="81" r="6" fill="#1a4e8c" opacity=".75"/>
-            <line x1="116" y1="66" x2="116" y2="96" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
-            <circle cx="25" cy="120" r="6" fill="#b5451b" opacity=".75"/><circle cx="63" cy="115" r="6" fill="#b5451b" opacity=".75"/><circle cx="110" cy="120" r="6" fill="#b5451b" opacity=".75"/><circle cx="157" cy="116" r="6" fill="#b5451b" opacity=".75"/><circle cx="199" cy="119" r="6" fill="#b5451b" opacity=".75"/>
-            <line x1="111" y1="104" x2="111" y2="130" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+          <svg viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg">
+            <text x="110" y="13" font-size="9.5" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Low F — Noise Wins</text>
+            <line x1="30" y1="20" x2="30" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <line x1="30" y1="165" x2="212" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <text x="24" y="168" font-size="7" fill="#999" font-family="monospace" text-anchor="end">0</text>
+            <text x="24" y="92" font-size="7" fill="#999" font-family="monospace" text-anchor="end">50</text>
+            <text x="24" y="23" font-size="7" fill="#999" font-family="monospace" text-anchor="end">100</text>
+            <line x1="27" y1="92" x2="30" y2="92" stroke="#bbb" stroke-width="1"/>
+            <line x1="27" y1="20" x2="30" y2="20" stroke="#bbb" stroke-width="1"/>
+            <text x="10" y="95" font-size="7" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,95)">Score</text>
+            <text x="72" y="178" font-size="10" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+            <text x="120" y="178" font-size="10" fill="#1a4e8c" font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+            <text x="168" y="178" font-size="10" fill="#b5451b" font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+            <!-- A: wide spread around 55; scores 22,42,62,82 → y: 133,104,75,46 -->
+            <circle cx="64"  cy="133" r="6" fill="#2d6a4f" opacity=".76"/>
+            <circle cx="72"  cy="104" r="6" fill="#2d6a4f" opacity=".76"/>
+            <circle cx="79"  cy="75"  r="6" fill="#2d6a4f" opacity=".76"/>
+            <circle cx="65"  cy="46"  r="6" fill="#2d6a4f" opacity=".76"/>
+            <!-- A mean at score=52 → y≈90 -->
+            <line x1="56" y1="90" x2="88" y2="90" stroke="#2d6a4f" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="90" y="93" font-size="7.5" fill="#2d6a4f" font-family="monospace">ȳ<tspan dy="2" font-size="6">A</tspan></text>
+            <!-- B: wide spread around 60; scores 25,48,70,88 → y: 129,95,63,37 -->
+            <circle cx="112" cy="129" r="6" fill="#1a4e8c" opacity=".76"/>
+            <circle cx="120" cy="95"  r="6" fill="#1a4e8c" opacity=".76"/>
+            <circle cx="127" cy="63"  r="6" fill="#1a4e8c" opacity=".76"/>
+            <circle cx="113" cy="37"  r="6" fill="#1a4e8c" opacity=".76"/>
+            <!-- B mean at score=58 → y≈81 -->
+            <line x1="104" y1="81" x2="136" y2="81" stroke="#1a4e8c" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="138" y="84" font-size="7.5" fill="#1a4e8c" font-family="monospace">ȳ<tspan dy="2" font-size="6">B</tspan></text>
+            <!-- C: wide spread around 58; scores 20,45,72,90 → y: 136,100,61,35 -->
+            <circle cx="160" cy="136" r="6" fill="#b5451b" opacity=".76"/>
+            <circle cx="168" cy="100" r="6" fill="#b5451b" opacity=".76"/>
+            <circle cx="175" cy="61"  r="6" fill="#b5451b" opacity=".76"/>
+            <circle cx="161" cy="35"  r="6" fill="#b5451b" opacity=".76"/>
+            <!-- C mean at score=57 → y≈82 -->
+            <line x1="152" y1="82" x2="184" y2="82" stroke="#b5451b" stroke-width="2" stroke-dasharray="4,3"/>
+            <text x="186" y="85" font-size="7.5" fill="#b5451b" font-family="monospace">ȳ<tspan dy="2" font-size="6">C</tspan></text>
           </svg>
-          <p class="vcap">Overlapping groups, wide spread → F ≈ 1</p>
+          <p class="vcap">Overlapping groups, wide within-group spread → F ≈ 1 → large p-value</p>
         </div>
       </div>
       <table class="itable">
-        <tr><th>F value</th><th>What it means</th></tr>
-        <tr><td><strong>F >> 1</strong></td><td>Between-group differences are large relative to within-group noise — strong evidence against equal means.</td></tr>
-        <tr><td><strong>F ≈ 1</strong></td><td>Group differences are about the same size as random noise — little evidence the groups differ.</td></tr>
-        <tr><td><strong>F &lt; 0</strong></td><td>Impossible. Both components are mean squares (always ≥ 0), so F ≥ 0 always.</td></tr>
+        <tr><th>F value</th><th>What it means</th><th>p-value tendency</th></tr>
+        <tr><td><strong>F >> 1</strong></td><td>Between-group signal dominates the within-group noise — strong evidence group means differ.</td><td>Small (e.g., p &lt; 0.05)</td></tr>
+        <tr><td><strong>F ≈ 1</strong></td><td>Group differences are about the same size as random noise — little evidence the groups differ.</td><td>Large (e.g., p > 0.05)</td></tr>
+        <tr><td><strong>F &lt; 0</strong></td><td>Impossible. Mean squares are always ≥ 0, so F ≥ 0 always.</td><td>N/A</td></tr>
       </table>
+      <div class="cbox" style="margin-top:12px;"><strong>The p-value:</strong> Given a large-enough F, we ask — if all group means were truly equal (H₀), how likely is it to see an F this large by chance? The p-value answers this. A <strong>small p-value</strong> means the data <em>provide evidence for</em> a difference among means; it does not alone "prove" causation.</div>
+      <div class="fill-wrap">
+        <span class="fill-lbl">Fill in the blanks — connect F to p:</span>
+        <p>The F-statistic is the ratio of
+          <input type="text" class="fill-blank" placeholder="between / within?">
+          variability to
+          <input type="text" class="fill-blank" placeholder="within / between?">
+          variability.</p>
+        <p>A <strong>larger</strong> F-statistic produces a
+          <input type="text" class="fill-blank" placeholder="smaller or larger?">
+          p-value, providing
+          <input type="text" class="fill-blank" placeholder="stronger or weaker?">
+          evidence against H₀.</p>
+        <p>If F = 8.7 and p = 0.002, we
+          <input type="text" class="fill-blank" placeholder="reject / fail to reject?">
+          H₀ and conclude there is
+          <input type="text" class="fill-blank" placeholder="strong / no?">
+          evidence that at least one group mean differs.</p>
+      </div>
       <div class="snav"><button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button><span class="sctr">4 / 6</span><button class="btn btn-gold btn-sm" onclick="tn(1)">Next →</button></div>
     </div>
 
@@ -367,34 +536,106 @@
     <div class="tslide" id="t5">
       <div class="stitle">5 / 6 — The Equal Variance Condition</div>
       <div class="cbox">ANOVA assumes that within-group variability is <strong>roughly equal across all groups</strong>. This is called <em>homoscedasticity</em> or the <strong>equal variance condition</strong>.</div>
-      <p>The panels below contrast equal variance (ANOVA works well) vs. unequal variance (ANOVA is unreliable).</p>
+      <p>The strip plots below contrast equal variance (ANOVA works well) vs. unequal variance (ANOVA is unreliable). The <strong>y-axis</strong> is the response variable (Exam Score); the width of each group's spread reflects its variance.</p>
       <div class="dpair">
+        <!-- Equal Variance -->
         <div class="vwrap">
-          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
-            <text x="118" y="13" font-size="10" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">Equal Variance ✓</text>
-            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
-            <circle cx="47" cy="43" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="55" cy="47" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="63" cy="41" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="71" cy="45" r="6" fill="#2d6a4f" opacity=".82"/>
-            <circle cx="104" cy="80" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="112" cy="76" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="120" cy="81" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="128" cy="77" r="6" fill="#1a4e8c" opacity=".82"/>
-            <circle cx="158" cy="118" r="6" fill="#b5451b" opacity=".82"/><circle cx="166" cy="114" r="6" fill="#b5451b" opacity=".82"/><circle cx="174" cy="119" r="6" fill="#b5451b" opacity=".82"/><circle cx="182" cy="115" r="6" fill="#b5451b" opacity=".82"/>
-            <line x1="45" y1="56" x2="73" y2="56" stroke="#2d6a4f" stroke-width="1.5"/>
-            <line x1="102" y1="92" x2="130" y2="92" stroke="#1a4e8c" stroke-width="1.5"/>
-            <line x1="156" y1="128" x2="184" y2="128" stroke="#b5451b" stroke-width="1.5"/>
+          <svg viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg">
+            <text x="110" y="13" font-size="9.5" fill="#2d6a4f" font-family="monospace" font-weight="bold" text-anchor="middle">Equal Variance ✓</text>
+            <line x1="30" y1="20" x2="30" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <line x1="30" y1="165" x2="212" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <text x="24" y="168" font-size="7" fill="#999" font-family="monospace" text-anchor="end">0</text>
+            <text x="24" y="92" font-size="7" fill="#999" font-family="monospace" text-anchor="end">50</text>
+            <text x="24" y="23" font-size="7" fill="#999" font-family="monospace" text-anchor="end">100</text>
+            <line x1="27" y1="92" x2="30" y2="92" stroke="#bbb" stroke-width="1"/>
+            <line x1="27" y1="20" x2="30" y2="20" stroke="#bbb" stroke-width="1"/>
+            <text x="10" y="95" font-size="7" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,95)">Score</text>
+            <text x="72"  y="178" font-size="10" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+            <text x="120" y="178" font-size="10" fill="#1a4e8c"  font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+            <text x="168" y="178" font-size="10" fill="#b5451b"  font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+            <!-- A: scores 57,62,67,60,64 → y=82,75,68,78,72; tight cluster -->
+            <circle cx="65" cy="82" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="73" cy="75" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="80" cy="68" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="62" cy="78" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="76" cy="72" r="6" fill="#2d6a4f" opacity=".82"/>
+            <!-- A IQR bracket showing similar spread -->
+            <line x1="55" y1="68" x2="55" y2="82" stroke="#2d6a4f" stroke-width="2"/>
+            <line x1="52" y1="68" x2="58" y2="68" stroke="#2d6a4f" stroke-width="1.5"/>
+            <line x1="52" y1="82" x2="58" y2="82" stroke="#2d6a4f" stroke-width="1.5"/>
+            <!-- B: scores 72,77,82,74,79 → y=61,54,46,58,50; tight cluster -->
+            <circle cx="113" cy="61" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="121" cy="54" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="128" cy="46" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="110" cy="58" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="124" cy="50" r="6" fill="#1a4e8c" opacity=".82"/>
+            <!-- B bracket -->
+            <line x1="103" y1="46" x2="103" y2="61" stroke="#1a4e8c" stroke-width="2"/>
+            <line x1="100" y1="46" x2="106" y2="46" stroke="#1a4e8c" stroke-width="1.5"/>
+            <line x1="100" y1="61" x2="106" y2="61" stroke="#1a4e8c" stroke-width="1.5"/>
+            <!-- C: scores 43,48,53,45,50 → y=102,95,88,100,93; tight cluster -->
+            <circle cx="161" cy="102" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="169" cy="95"  r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="176" cy="88"  r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="158" cy="100" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="172" cy="93"  r="6" fill="#b5451b" opacity=".82"/>
+            <!-- C bracket -->
+            <line x1="151" y1="88" x2="151" y2="102" stroke="#b5451b" stroke-width="2"/>
+            <line x1="148" y1="88"  x2="154" y2="88"  stroke="#b5451b" stroke-width="1.5"/>
+            <line x1="148" y1="102" x2="154" y2="102" stroke="#b5451b" stroke-width="1.5"/>
+            <text x="110" y="142" font-size="8" fill="#1a6b3a" font-family="monospace" text-anchor="middle">All groups similar spread ✓</text>
           </svg>
-          <p class="vcap">Similar spread in all groups — condition met</p>
+          <p class="vcap">Similar within-group spread (ȳᵢ variances roughly equal) — equal variance condition met</p>
         </div>
+        <!-- Unequal Variance -->
         <div class="vwrap">
-          <svg viewBox="0 0 236 142" xmlns="http://www.w3.org/2000/svg">
-            <text x="118" y="13" font-size="10" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Unequal Variance ✗</text>
-            <line x1="12" y1="132" x2="224" y2="132" stroke="#ccc" stroke-width="1.2"/>
-            <circle cx="52" cy="43" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="58" cy="47" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="64" cy="41" r="6" fill="#2d6a4f" opacity=".82"/><circle cx="70" cy="45" r="6" fill="#2d6a4f" opacity=".82"/>
-            <circle cx="24" cy="80" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="60" cy="76" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="100" cy="81" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="148" cy="77" r="6" fill="#1a4e8c" opacity=".82"/><circle cx="200" cy="80" r="6" fill="#1a4e8c" opacity=".82"/>
-            <circle cx="156" cy="118" r="6" fill="#b5451b" opacity=".82"/><circle cx="164" cy="114" r="6" fill="#b5451b" opacity=".82"/><circle cx="172" cy="119" r="6" fill="#b5451b" opacity=".82"/><circle cx="180" cy="115" r="6" fill="#b5451b" opacity=".82"/>
-            <line x1="50" y1="56" x2="72" y2="56" stroke="#2d6a4f" stroke-width="1.5"/>
-            <line x1="22" y1="92" x2="202" y2="92" stroke="#1a4e8c" stroke-width="1.5"/>
-            <text x="112" y="104" font-size="8.5" fill="#1a4e8c" font-family="monospace" text-anchor="middle">Group B is much wider</text>
-            <line x1="154" y1="128" x2="182" y2="128" stroke="#b5451b" stroke-width="1.5"/>
+          <svg viewBox="0 0 220 185" xmlns="http://www.w3.org/2000/svg">
+            <text x="110" y="13" font-size="9.5" fill="#b5451b" font-family="monospace" font-weight="bold" text-anchor="middle">Unequal Variance ✗</text>
+            <line x1="30" y1="20" x2="30" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <line x1="30" y1="165" x2="212" y2="165" stroke="#bbb" stroke-width="1.2"/>
+            <text x="24" y="168" font-size="7" fill="#999" font-family="monospace" text-anchor="end">0</text>
+            <text x="24" y="92" font-size="7" fill="#999" font-family="monospace" text-anchor="end">50</text>
+            <text x="24" y="23" font-size="7" fill="#999" font-family="monospace" text-anchor="end">100</text>
+            <line x1="27" y1="92" x2="30" y2="92" stroke="#bbb" stroke-width="1"/>
+            <line x1="27" y1="20" x2="30" y2="20" stroke="#bbb" stroke-width="1"/>
+            <text x="10" y="95" font-size="7" fill="#888" font-family="monospace" text-anchor="middle" transform="rotate(-90,10,95)">Score</text>
+            <text x="72"  y="178" font-size="10" fill="#2d6a4f" font-family="monospace" text-anchor="middle" font-weight="700">A</text>
+            <text x="120" y="178" font-size="10" fill="#1a4e8c"  font-family="monospace" text-anchor="middle" font-weight="700">B</text>
+            <text x="168" y="178" font-size="10" fill="#b5451b"  font-family="monospace" text-anchor="middle" font-weight="700">C</text>
+            <!-- A: tight, scores 57,61,65,59 → y=82,76,71,79 -->
+            <circle cx="65" cy="82" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="73" cy="76" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="79" cy="71" r="6" fill="#2d6a4f" opacity=".82"/>
+            <circle cx="62" cy="79" r="6" fill="#2d6a4f" opacity=".82"/>
+            <!-- A bracket (narrow) -->
+            <line x1="55" y1="71" x2="55" y2="82" stroke="#2d6a4f" stroke-width="2"/>
+            <line x1="52" y1="71" x2="58" y2="71" stroke="#2d6a4f" stroke-width="1.5"/>
+            <line x1="52" y1="82" x2="58" y2="82" stroke="#2d6a4f" stroke-width="1.5"/>
+            <!-- B: WIDE spread, scores 15,35,60,82,95 → y=143,115,78,47,27 -->
+            <circle cx="113" cy="143" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="121" cy="115" r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="128" cy="78"  r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="115" cy="47"  r="6" fill="#1a4e8c" opacity=".82"/>
+            <circle cx="122" cy="27"  r="6" fill="#1a4e8c" opacity=".82"/>
+            <!-- B bracket (WIDE) -->
+            <line x1="103" y1="27" x2="103" y2="143" stroke="#1a4e8c" stroke-width="2"/>
+            <line x1="100" y1="27"  x2="106" y2="27"  stroke="#1a4e8c" stroke-width="1.5"/>
+            <line x1="100" y1="143" x2="106" y2="143" stroke="#1a4e8c" stroke-width="1.5"/>
+            <text x="85" y="90" font-size="7.5" fill="#1a4e8c" font-family="monospace" text-anchor="end">B is</text>
+            <text x="85" y="100" font-size="7.5" fill="#1a4e8c" font-family="monospace" text-anchor="end">much</text>
+            <text x="85" y="110" font-size="7.5" fill="#1a4e8c" font-family="monospace" text-anchor="end">wider</text>
+            <!-- C: tight, scores 63,67,71,65 → y=74,68,62,71 -->
+            <circle cx="161" cy="74" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="169" cy="68" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="176" cy="62" r="6" fill="#b5451b" opacity=".82"/>
+            <circle cx="158" cy="71" r="6" fill="#b5451b" opacity=".82"/>
+            <!-- C bracket (narrow) -->
+            <line x1="151" y1="62" x2="151" y2="74" stroke="#b5451b" stroke-width="2"/>
+            <line x1="148" y1="62" x2="154" y2="62" stroke="#b5451b" stroke-width="1.5"/>
+            <line x1="148" y1="74" x2="154" y2="74" stroke="#b5451b" stroke-width="1.5"/>
+            <text x="110" y="158" font-size="8" fill="#b5451b" font-family="monospace" text-anchor="middle">Group B violates condition ✗</text>
           </svg>
-          <p class="vcap">Group B far wider — condition violated</p>
+          <p class="vcap">Group B is far more variable — equal variance condition violated, F-test unreliable</p>
         </div>
       </div>
       <div class="cbox"><strong>Why it matters:</strong> ANOVA pools within-group variance from all groups into one estimate for the denominator of F. If one group is far more spread out, that pooled estimate is distorted and the F-test becomes unreliable. <em>Rule of thumb:</em> largest SD ≤ ~2× smallest SD.</div>
@@ -406,11 +647,30 @@
       <div class="stitle">6 / 6 — Summary Before the Activity</div>
       <table class="itable">
         <tr><th>Concept</th><th>What it is</th><th>Role in ANOVA</th></tr>
-        <tr><td><strong>Within-group variability</strong></td><td>Spread of individuals around their own group mean</td><td>Noise — denominator of F</td></tr>
-        <tr><td><strong>Between-group variability</strong></td><td>Spread of group means around the grand mean</td><td>Signal — numerator of F</td></tr>
-        <tr><td><strong>F-ratio</strong></td><td>Between ÷ Within</td><td>Large F → evidence groups differ; always ≥ 0</td></tr>
-        <tr><td><strong>Equal variance condition</strong></td><td>Within-group spread roughly equal across groups</td><td>Required for F-test to be reliable</td></tr>
+        <tr><td><strong>Within-group variability</strong></td><td>Spread of individuals around their own group mean ȳᵢ</td><td>Noise — denominator of F (MS<sub>Within</sub>)</td></tr>
+        <tr><td><strong>Between-group variability</strong></td><td>Spread of group means ȳᵢ around the grand mean ȳ̄</td><td>Signal — numerator of F (MS<sub>Between</sub>)</td></tr>
+        <tr><td><strong>F-ratio (test statistic)</strong></td><td>MS<sub>Between</sub> ÷ MS<sub>Within</sub> = Signal ÷ Noise</td><td>Large F → evidence groups differ; F ≥ 0 always</td></tr>
+        <tr><td><strong>p-value</strong></td><td>Probability of observing F this large (or larger) if H₀ is true (all group means equal)</td><td>Small p → reject H₀; data provide evidence for a causal claim</td></tr>
+        <tr><td><strong>Equal variance condition</strong></td><td>Within-group spread roughly equal across groups (largest SD ≤ ~2× smallest)</td><td>Required for F-test to be reliable</td></tr>
       </table>
+      <div class="fill-wrap" style="margin-top:16px;">
+        <span class="fill-lbl">Quick check before you start:</span>
+        <p>The F-statistic is the ratio of
+          <input type="text" class="fill-blank" placeholder="…">
+          variability to
+          <input type="text" class="fill-blank" placeholder="…">
+          variability.</p>
+        <p>A small p-value (e.g., p = 0.003) provides
+          <input type="text" class="fill-blank" placeholder="strong / weak?">
+          evidence against H₀, suggesting that
+          <input type="text" class="fill-blank" placeholder="…">
+          .</p>
+        <p>In a One-Way ANOVA, the response variable must be
+          <input type="text" class="fill-blank" placeholder="categorical / quantitative?">
+          and the explanatory variable must be
+          <input type="text" class="fill-blank" placeholder="categorical / quantitative?">
+          .</p>
+      </div>
       <div class="nbox" style="margin-top:14px;"><strong>Ready?</strong> You will now use your assigned learning method to answer four questions. Click Continue when ready.</div>
       <div class="snav">
         <button class="btn btn-green btn-sm" onclick="tn(-1)">← Back</button>
@@ -628,7 +888,7 @@ function buildMethod(g){
     h=`<h3>Using AI to deepen your understanding</h3>
     <p>Before answering the four questions, spend a few minutes using <strong>CSU ChatGPT</strong> to further explore the concepts from the slides. Ask whatever questions help you understand them better.</p>
     <div class="cbox"><strong>Suggested starting point:</strong><br>"Help me understand between-group and within-group variability in the context of one-way ANOVA."<br><br>Ask as many follow-up questions as you like — there is no required format.</div>
-    <ol class="steps"><li>Switch to your CSU ChatGPT tab at <code>chat.calstate.edu</code></li><li>Start a conversation and explore until you feel ready</li><li>Keep the tab open — you will copy your conversation at the end</li></ol>
+    <ol class="steps"><li>Open CSU ChatGPT: <a href="https://chat.calstate.edu" target="_blank" rel="noopener" style="color:var(--green);font-weight:600;">chat.calstate.edu ↗</a></li><li>Start a conversation and explore until you feel ready</li><li>Keep the tab open — you will copy your conversation at the end</li></ol>
     <div class="nbox"><strong>When ready:</strong> click "Start the Questions" below.</div>`;
   } else {
     h=`<h3>Using AI with a structured technique</h3>
@@ -649,7 +909,7 @@ Now explain <span class="fill">[the F-ratio / the equal variance condition]</spa
 
 Give me a <span class="fill">[step-by-step breakdown]</span> in plain language.</div>
     </div>
-    <ol class="steps"><li>Switch to your CSU ChatGPT tab at <code>chat.calstate.edu</code></li><li>Send the RTF prompt above as your first message</li><li>Send at least 2 RTF follow-up prompts</li><li>Keep the tab open — you will copy your conversation at the end</li></ol>
+    <ol class="steps"><li>Open CSU ChatGPT: <a href="https://chat.calstate.edu" target="_blank" rel="noopener" style="color:var(--green);font-weight:600;">chat.calstate.edu ↗</a></li><li>Send the RTF prompt above as your first message</li><li>Send at least 2 RTF follow-up prompts</li><li>Keep the tab open — you will copy your conversation at the end</li></ol>
     <div class="nbox"><strong>When ready:</strong> click "Start the Questions" below.</div>`;
   }
   document.getElementById('mcontent').innerHTML=h;
