@@ -1,0 +1,157 @@
+---
+title: "Experiment Completion Score"
+format:
+  html:
+    toc: true
+    df-print: paged
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Purpose
+
+This file checks which students completed the pre-test and post-test for the experiment. The roster is treated as the official list of students. A student receives 5 points if they completed at least one of the two tests.
+
+## Load packages
+
+```{r}
+library(here)
+library(readr)
+library(readxl)
+library(dplyr)
+library(janitor)
+library(stringr)
+```
+
+## File paths
+
+```{r}
+pre_test_path <- here(
+  "data",
+  "Pre-Test - Experiment Quiz Student Analysis Report.csv"
+)
+
+post_test_path <- here(
+  "data",
+  "Post-Test - Experiment Quiz Student Analysis Report.csv"
+)
+
+roster_path <- "/Users/immanuelwilliams/Library/CloudStorage/OneDrive-Personal/Documents/Important_Files/Cal_Poly/01_Class_Material/STAT_252/stat252-spring-2026/Data/roster/stat252_spring_2026_roster_new.xlsx"
+```
+
+## Load data
+
+```{r}
+pre_test_raw <- read_csv(pre_test_path, show_col_types = FALSE) |>
+  clean_names()
+
+post_test_raw <- read_csv(post_test_path, show_col_types = FALSE) |>
+  clean_names()
+
+roster_raw <- read_excel(roster_path) |>
+  clean_names()
+```
+
+## Check column names
+
+Use this section to verify that each file has a `sis_id` column after cleaning the names.
+
+```{r}
+names(pre_test_raw)
+names(post_test_raw)
+names(roster_raw)
+```
+
+## Clean student IDs
+
+```{r}
+clean_sis_id <- function(x) {
+  as.character(as.numeric(x))
+}
+
+pre_test <- pre_test_raw |>
+  mutate(
+    sis_id = clean_sis_id(sis_id) |> str_trim()
+  ) |>
+  select(name, sis_id) |> 
+  filter(!is.na(sis_id), sis_id != "") |>
+  distinct(sis_id) |>
+  mutate(completed_pre_test = TRUE) 
+
+post_test <- post_test_raw |>
+  mutate(
+    sis_id = clean_sis_id(sis_id) |> str_trim()
+  ) |>
+  select(name, sis_id) |> 
+  filter(!is.na(sis_id), sis_id != "") |>
+  distinct(sis_id) |>
+  mutate(completed_post_test = TRUE)
+
+roster <- roster_raw |>
+  mutate(
+    sis_id = clean_sis_id(sis_id) |> str_trim()
+  ) |>
+  filter(!is.na(sis_id), sis_id != "")
+```
+
+## Create completion and score data frame
+
+```{r}
+completion_score_df <- roster |>
+  left_join(pre_test, by = "sis_id") |>
+  left_join(post_test, by = "sis_id") |>
+  mutate(
+    completed_pre_test = if_else(is.na(completed_pre_test), FALSE, completed_pre_test),
+    completed_post_test = if_else(is.na(completed_post_test), FALSE, completed_post_test),
+    completed_at_least_one = completed_pre_test | completed_post_test,
+    score = if_else(completed_at_least_one, 5, 0)
+  ) 
+  
+  
+score_df <- completion_score_df |>
+  select(email,score)
+
+
+```
+
+## Completion summary
+
+```{r}
+completion_summary <- completion_score_df |>
+  summarize(
+    n_students_on_roster = n(),
+    n_completed_pre_test = sum(completed_pre_test),
+    n_completed_post_test = sum(completed_post_test),
+    n_completed_at_least_one = sum(completed_at_least_one),
+    n_completed_both = sum(completed_pre_test & completed_post_test),
+    n_completed_neither = sum(!completed_pre_test & !completed_post_test),
+    total_points_awarded = sum(score)
+  )
+
+completion_summary
+```
+
+## Students who did not complete either test
+
+```{r}
+missing_both_df <- completion_score_df |>
+  filter(!completed_pre_test, !completed_post_test)
+
+missing_both_df
+```
+
+## Save output
+
+```{r}
+write_csv(
+  score_df,
+  here("data", "cci_9_score.csv")
+)
+
+write_csv(
+  missing_both_df,
+  here("data", "students_missing_both_tests.csv")
+)
+```
