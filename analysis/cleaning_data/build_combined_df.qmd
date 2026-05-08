@@ -1,0 +1,204 @@
+---
+title: "Build Combined Pre/Post Scores Dataset — STAT 252 Spring 2026"
+author: "Dr. Immanuel J. Williams"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    theme: cosmo
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Setup
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(readxl)
+library(here)
+library(janitor)
+```
+
+## 1. Read Data
+
+### Quiz CSVs
+
+```{r}
+#| label: read-quiz-data
+
+pre_raw_df <- read_csv(
+  "data/Pre-Test - Experiment Quiz Student Analysis Report.csv",
+  show_col_types = FALSE
+)
+
+post_raw_df <- read_csv(
+  "data/Post-Test - Experiment Quiz Student Analysis Report.csv",
+  show_col_types = FALSE
+)
+```
+
+### Roster Files
+
+```{r}
+#| label: read-roster
+
+roster_raw_df <- read_xlsx(
+  "/Users/immanuelwilliams/Library/CloudStorage/OneDrive-Personal/Documents/Important_Files/Cal_Poly/01_Class_Material/STAT_252/stat252-spring-2026/Data/roster/stat252_spring_2026_roster_new.xlsx"
+)
+
+consent_confirmed_df <- read_xlsx(here("data", "consent_confirmed.xlsx"))
+no_identi_roster_df  <- read_xlsx(here("data", "no_identification_roster.xlsx"))
+```
+
+---
+
+## 2. Build Anonymized Roster (`analysis_df`)
+
+Inner join `consent_confirmed_df` and `no_identi_roster_df` by `section` and
+`row`, then drop all personally identifiable columns.
+
+```{r}
+#| label: build-analysis-df
+
+joined_df <- inner_join(
+  consent_confirmed_df,
+  no_identi_roster_df,
+  by = c("section", "row")
+)
+
+analysis_df <- joined_df |>
+  select(-student_name, -email)
+```
+
+---
+
+## 3. Extract and Rename Quiz Columns
+
+```{r}
+#| label: extract-scores
+
+pre_scores_df <- pre_raw_df |>
+  clean_names() |>
+  select(sis_id, n_correct, n_incorrect) |>
+  rename(
+    n_correct_pre   = n_correct,
+    n_incorrect_pre = n_incorrect
+  )
+
+post_scores_df <- post_raw_df |>
+  clean_names() |>
+  select(sis_id, n_correct, n_incorrect) |>
+  rename(
+    n_correct_post   = n_correct,
+    n_incorrect_post = n_incorrect
+  )
+```
+
+---
+
+## 4. Standardize `sis_id` as Character
+
+```{r}
+#| label: coerce-sis-id
+
+clean_sis_id <- function(x) {
+  as.character(as.numeric(x))
+}
+
+pre_scores_df <- pre_scores_df |>
+  mutate(sis_id = clean_sis_id(sis_id))
+
+post_scores_df <- post_scores_df |>
+  mutate(sis_id = clean_sis_id(sis_id))
+
+roster_df <- roster_raw_df |>
+  clean_names() |>
+  mutate(sis_id = clean_sis_id(sis_id)) |>
+  select(sis_id, row)
+
+analysis_df <- analysis_df |>
+  mutate(sis_id = clean_sis_id(sis_id))
+```
+
+---
+
+## 5. Join All Data Frames
+
+Start from the roster, bring in pre- and post-test scores, then attach
+anonymized metadata from `analysis_df`. Drop `row` from `analysis_df` before
+joining to avoid a duplicate column conflict with the one already in `roster_df`.
+After joining, remove any columns where every value is `NA`.
+
+```{r}
+#| label: join-data
+
+combined_df <- roster_df |>
+  left_join(pre_scores_df,  by = "sis_id") |>
+  left_join(post_scores_df, by = "sis_id") |>
+  left_join(
+    select(analysis_df, -row),
+    by = "sis_id"
+  ) |>
+  select(
+    sis_id,
+    section,
+    row,
+    n_correct_pre,
+    n_incorrect_pre,
+    n_correct_post,
+    n_incorrect_post,
+    everything()
+  ) |>
+  select(where(~ !all(is.na(.)))) |> 
+  select(-`...11`)
+
+glimpse(combined_df)
+```
+
+---
+
+## 6. Export
+
+```{r}
+#| label: export
+
+write.csv(
+  combined_df,
+  here("data", "stat252_sp26_pre_post_scores.csv"),
+  row.names = FALSE
+)
+```
+
+---
+
+## 7. Preview
+
+```{r}
+#| label: preview
+
+combined_df |>
+  head(10) |>
+  knitr::kable(caption = "First 10 rows of joined dataset")
+```
+
+---
+
+## 8. Summary of Missing Values
+
+```{r}
+#| label: missing-check
+
+combined_df |>
+  summarise(
+    n_total              = n(),
+    missing_pre_correct  = sum(is.na(n_correct_pre)),
+    missing_post_correct = sum(is.na(n_correct_post))
+  ) |>
+  knitr::kable(caption = "Missing value summary")
+```
